@@ -1,9 +1,28 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FiMinus, FiPlus, FiTrash2, FiShoppingBag } from 'react-icons/fi'
 import { useCart } from '../context/CartContext'
+import { useAuth } from '../context/AuthContext'
+import { useNotification } from '../context/NotificationContext'
 
 function CartPage() {
-  const { cartItems, cartCount, cartTotal, updateQuantity, removeFromCart, clearCart } = useCart()
+  const { cartItems, cartCount, cartTotal, updateQuantity, removeFromCart } = useCart()
+  const { isAuthenticated } = useAuth()
+  const notify = useNotification()
+  const navigate = useNavigate()
+
+  const handleCheckout = () => {
+    if (!isAuthenticated) {
+      notify.warning('Please login to proceed to checkout')
+      navigate('/login')
+      return
+    }
+    navigate('/checkout')
+  }
+
+  const handleRemove = (item) => {
+    removeFromCart(item.id)
+    notify.info(`${item.name} removed from cart`)
+  }
 
   return (
     <>
@@ -54,7 +73,7 @@ function CartPage() {
                           </div>
                           <button
                             className="cart-item__remove"
-                            onClick={() => removeFromCart(item.id)}
+                            onClick={() => handleRemove(item)}
                           >
                             <FiTrash2 /> Remove
                           </button>
@@ -72,14 +91,16 @@ function CartPage() {
                   </div>
                   <div className="cart-summary__row">
                     <span>Shipping</span>
-                    <span>{cartTotal > 5000 ? 'Free' : '₹299'}</span>
+                    <span>{cartTotal >= 5000 ? 'Free' : '₹99'}</span>
                   </div>
                   <div className="cart-summary__row cart-summary__row--total">
                     <span>Total</span>
-                    <span>₹{(cartTotal > 5000 ? cartTotal : cartTotal + 299).toLocaleString()}</span>
+                    <span>₹{(cartTotal >= 5000 ? cartTotal : cartTotal + 99).toLocaleString()}</span>
                   </div>
                   <div className="cart-summary__checkout">
-                    <button className="btn btn--primary btn--full">Proceed to Checkout</button>
+                    <button className="btn btn--primary btn--full" onClick={handleCheckout}>
+                      Proceed to Checkout
+                    </button>
                   </div>
                   <div style={{ textAlign: 'center', marginTop: '1rem' }}>
                     <Link to="/shop" style={{ fontSize: '0.85rem', color: '#c9a84c' }}>

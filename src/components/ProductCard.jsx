@@ -2,11 +2,14 @@ import { Link } from 'react-router-dom'
 import { FiHeart, FiShoppingBag } from 'react-icons/fi'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
+import { useNotification } from '../context/NotificationContext'
 
 function ProductCard({ product }) {
   const { addToCart } = useCart()
   const { toggleWishlist, isInWishlist } = useWishlist()
-  const wishlisted = isInWishlist(product.id)
+  const notify = useNotification()
+  const productId = product.id || product._id
+  const wishlisted = isInWishlist(productId)
 
   const discount = Math.round(((product.price - product.salePrice) / product.price) * 100)
 
@@ -14,16 +17,18 @@ function ProductCard({ product }) {
     e.preventDefault()
     e.stopPropagation()
     addToCart(product)
+    notify.success(`${product.name} added to cart`)
   }
 
   const handleToggleWishlist = (e) => {
     e.preventDefault()
     e.stopPropagation()
     toggleWishlist(product)
+    notify.info(wishlisted ? `Removed from wishlist` : `${product.name} added to wishlist`)
   }
 
   return (
-    <Link to={`/product/${product.id}`} className="product-card">
+    <Link to={`/product/${productId}`} className="product-card">
       <div className="product-card__image-wrapper">
         <img src={product.image} alt={product.name} className="product-card__image" />
         {discount > 0 && (

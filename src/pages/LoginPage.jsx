@@ -2,18 +2,27 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowLeft } from 'react-icons/fi'
 import { FcGoogle } from 'react-icons/fc'
+import { useAuth } from '../context/AuthContext'
+import { useNotification } from '../context/NotificationContext'
 
 function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
+  const { login, loading } = useAuth()
+  const notify = useNotification()
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Will connect to backend later
-    alert('Login functionality will be connected to backend soon!')
+    const result = await login(email, password)
+    if (result.success) {
+      notify.success('Welcome back! Logged in successfully')
+      navigate('/')
+    } else {
+      notify.error(result.message)
+    }
   }
 
   return (
@@ -98,8 +107,8 @@ function LoginPage() {
           </div>
 
           <div className="auth-form__submit">
-            <button type="submit" className="btn btn--primary btn--full">
-              Sign In
+            <button type="submit" className="btn btn--primary btn--full" disabled={loading}>
+              {loading ? 'Signing In...' : 'Sign In'}
             </button>
           </div>
 

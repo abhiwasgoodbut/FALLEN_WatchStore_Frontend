@@ -1,6 +1,15 @@
-import { createContext, useContext, useReducer } from 'react'
+import { createContext, useContext, useReducer, useEffect } from 'react'
 
 const WishlistContext = createContext()
+
+const getInitialWishlist = () => {
+  try {
+    const saved = localStorage.getItem('fallen_wishlist')
+    return saved ? JSON.parse(saved) : { items: [] }
+  } catch {
+    return { items: [] }
+  }
+}
 
 const wishlistReducer = (state, action) => {
   switch (action.type) {
@@ -28,7 +37,11 @@ const wishlistReducer = (state, action) => {
 }
 
 export function WishlistProvider({ children }) {
-  const [state, dispatch] = useReducer(wishlistReducer, { items: [] })
+  const [state, dispatch] = useReducer(wishlistReducer, null, getInitialWishlist)
+
+  useEffect(() => {
+    localStorage.setItem('fallen_wishlist', JSON.stringify(state))
+  }, [state])
 
   const toggleWishlist = (product) => dispatch({ type: 'TOGGLE_WISHLIST', payload: product })
   const removeFromWishlist = (id) => dispatch({ type: 'REMOVE_FROM_WISHLIST', payload: id })

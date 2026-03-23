@@ -42,7 +42,7 @@ const products = [
     name: "Speedmaster Moonwatch",
     brand: "OMEGA",
     price: 165000,
-    salePrice: 139999,
+    salePrice: 1399,
     category: "classic",
     image: "https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?w=500",
     description: "The legendary Moonwatch that accompanied astronauts on their journey to the moon. An icon of space exploration and precision engineering.",

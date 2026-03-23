@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FiUser, FiMail, FiLock, FiPhone, FiEye, FiEyeOff, FiArrowLeft } from 'react-icons/fi'
 import { FcGoogle } from 'react-icons/fc'
+import { useAuth } from '../context/AuthContext'
+import { useNotification } from '../context/NotificationContext'
 
 function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -9,25 +11,32 @@ function RegisterPage() {
   })
   const [showPassword, setShowPassword] = useState(false)
   const [agreed, setAgreed] = useState(false)
-  const [success, setSuccess] = useState(false)
+  const { register, loading } = useAuth()
+  const notify = useNotification()
   const navigate = useNavigate()
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!')
+      notify.error('Passwords do not match!')
       return
     }
     if (!agreed) {
-      alert('Please agree to the Terms & Conditions')
+      notify.warning('Please agree to the Terms & Conditions')
       return
     }
-    setSuccess(true)
-    setTimeout(() => setSuccess(false), 4000)
+    const { confirmPassword, ...registerData } = formData
+    const result = await register(registerData)
+    if (result.success) {
+      notify.success('Account created successfully! Welcome to FALLEN')
+      navigate('/')
+    } else {
+      notify.error(result.message)
+    }
   }
 
   return (
@@ -48,12 +57,6 @@ function RegisterPage() {
 
         <h1 className="auth-card__title">Create Account</h1>
         <p className="auth-card__subtitle">Join FALLEN and explore premium timepieces</p>
-
-        {success && (
-          <div className="auth-form__success">
-            ✓ Account created successfully! Redirecting to login...
-          </div>
-        )}
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="auth-form__row">
@@ -193,8 +196,8 @@ function RegisterPage() {
           </div>
 
           <div className="auth-form__submit">
-            <button type="submit" className="btn btn--primary btn--full">
-              Create Account
+            <button type="submit" className="btn btn--primary btn--full" disabled={loading}>
+              {loading ? 'Creating Account...' : 'Create Account'}
             </button>
           </div>
 

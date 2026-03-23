@@ -1,11 +1,29 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { FiArrowRight } from 'react-icons/fi'
 import ProductCard from '../components/ProductCard'
-import products from '../data/products'
+import staticProducts from '../data/products'
+import API from '../api/axios'
 
 function HomePage() {
-  const featuredProducts = products.filter(p => p.isFeatured)
-  const bestsellerProducts = products.filter(p => p.isBestseller)
+  const [dbProducts, setDbProducts] = useState([])
+
+  useEffect(() => {
+    API.get('/products?limit=100')
+      .then(({ data }) => {
+        const prods = (data.products || data).map(p => ({
+          ...p,
+          id: p._id,
+          image: p.images?.[0]?.url || 'https://via.placeholder.com/400?text=No+Image',
+        }))
+        setDbProducts(prods)
+      })
+      .catch(() => {})
+  }, [])
+
+  const allProducts = [...dbProducts, ...staticProducts]
+  const featuredProducts = allProducts.filter(p => p.isFeatured)
+  const bestsellerProducts = allProducts.filter(p => p.isBestseller)
 
   const categories = [
     { name: 'Luxury', icon: '👑', filter: 'luxury' },

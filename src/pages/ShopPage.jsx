@@ -1,7 +1,8 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import ProductCard from '../components/ProductCard'
-import products from '../data/products'
+import staticProducts from '../data/products'
+import API from '../api/axios'
 
 function ShopPage() {
   const [searchParams] = useSearchParams()
@@ -9,6 +10,26 @@ function ShopPage() {
   const [selectedCategory, setSelectedCategory] = useState(initialCategory)
   const [sortBy, setSortBy] = useState('default')
   const [visibleCount, setVisibleCount] = useState(8)
+  const [dbProducts, setDbProducts] = useState([])
+
+  // Fetch DB products on mount
+  useEffect(() => {
+    API.get('/products?limit=100')
+      .then(({ data }) => {
+        const prods = (data.products || data).map(p => ({
+          ...p,
+          id: p._id,
+          image: p.images?.[0]?.url || 'https://via.placeholder.com/400?text=No+Image',
+        }))
+        setDbProducts(prods)
+      })
+      .catch(() => { /* API down — just use static data */ })
+  }, [])
+
+  // Merge: DB products first, then static
+  const allProducts = useMemo(() => {
+    return [...dbProducts, ...staticProducts]
+  }, [dbProducts])
 
   const categories = [
     { label: 'All Watches', value: 'all' },
@@ -18,10 +39,10 @@ function ShopPage() {
     { label: 'Smart', value: 'smart' },
   ]
 
-  const brands = [...new Set(products.map(p => p.brand))]
+  const brands = [...new Set(allProducts.map(p => p.brand))]
 
   const filteredProducts = useMemo(() => {
-    let result = [...products]
+    let result = [...allProducts]
 
     if (selectedCategory !== 'all') {
       result = result.filter(p => p.category === selectedCategory)
@@ -42,7 +63,7 @@ function ShopPage() {
     }
 
     return result
-  }, [selectedCategory, sortBy])
+  }, [selectedCategory, sortBy, allProducts])
 
   const visibleProducts = filteredProducts.slice(0, visibleCount)
 
@@ -116,7 +137,7 @@ function ShopPage() {
             <div className="shop-page__products">
               <div className="products-grid">
                 {visibleProducts.map(product => (
-                  <ProductCard key={product.id} product={product} />
+                  <ProductCard key={product.id || product._id} product={product} />
                 ))}
               </div>
 

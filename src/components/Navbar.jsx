@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { FiSearch, FiHeart, FiShoppingBag, FiUser, FiX } from 'react-icons/fi'
+import { FiSearch, FiHeart, FiShoppingBag, FiUser, FiX, FiGrid } from 'react-icons/fi'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
+import { useAuth } from '../context/AuthContext'
 import products from '../data/products'
 
 function Navbar() {
@@ -12,6 +13,7 @@ function Navbar() {
   const [searchQuery, setSearchQuery] = useState('')
   const { cartCount } = useCart()
   const { wishlistCount } = useWishlist()
+  const { user, isAuthenticated, isAdmin } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -26,6 +28,7 @@ function Navbar() {
     { to: '/about', label: 'About' },
     { to: '/contact', label: 'Contact' },
     { to: '/track-order', label: 'Track Order' },
+    ...(isAdmin ? [{ to: '/admin', label: '⚙ Admin' }] : []),
   ]
 
   const searchResults = searchQuery.length > 1
@@ -40,6 +43,7 @@ function Navbar() {
     setSearchQuery('')
     navigate(`/product/${id}`)
   }
+
 
   return (
     <>
@@ -74,9 +78,15 @@ function Navbar() {
               <FiShoppingBag />
               {cartCount > 0 && <span className="navbar__badge">{cartCount}</span>}
             </Link>
-            <Link to="/login" className="navbar__icon-btn" aria-label="Account">
-              <FiUser />
-            </Link>
+            {isAuthenticated ? (
+              <Link to="/profile" className="navbar__icon-btn" aria-label="Profile" title={`${user.firstName}'s Profile`}>
+                <FiUser />
+              </Link>
+            ) : (
+              <Link to="/login" className="navbar__icon-btn" aria-label="Account">
+                <FiUser />
+              </Link>
+            )}
             <button
               className={`navbar__hamburger ${menuOpen ? 'open' : ''}`}
               onClick={() => setMenuOpen(!menuOpen)}
@@ -108,6 +118,15 @@ function Navbar() {
         <Link to="/cart" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
           Cart ({cartCount})
         </Link>
+        {isAuthenticated ? (
+          <Link to="/profile" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
+            My Account ({user.firstName})
+          </Link>
+        ) : (
+          <Link to="/login" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>
+            Login
+          </Link>
+        )}
       </div>
 
       {/* Search Overlay */}
