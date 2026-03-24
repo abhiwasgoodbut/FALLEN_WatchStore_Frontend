@@ -49,6 +49,57 @@ export const login = async (req, res, next) => {
   }
 }
 
+// POST /api/auth/google
+import { OAuth2Client } from 'google-auth-library'
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
+
+export const googleLogin = async (req, res, next) => {
+  try {
+    const { credential } = req.body
+    
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    })
+    
+    const { email, given_name, family_name, picture, sub } = ticket.getPayload()
+
+    let user = await User.findOne({ email })
+
+    if (!user) {
+      // Create a passwordless Google account
+      user = await User.create({
+        firstName: given_name,
+        lastName: family_name || given_name,
+        email,
+        authProvider: 'google',
+        googleId: sub,
+        avatar: { url: picture, public_id: '' }
+      })
+    } else if (user.authProvider === 'local' && !user.googleId) {
+      // Link Google ID if email already exists as local account
+      user.googleId = sub
+      if (!user.avatar?.url && picture) {
+        user.avatar = { url: picture, public_id: '' }
+      }
+      await user.save()
+    }
+
+    res.json({
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+      avatar: user.avatar,
+      token: generateToken(user._id),
+    })
+  } catch (error) {
+    console.error('Google Auth Error:', error)
+    res.status(401).json({ message: 'Google Authentication Failed' })
+  }
+}
+
 // GET /api/auth/profile
 export const getProfile = async (req, res, next) => {
   try {

@@ -2143,10 +2143,10 @@ h1, h2, h3, h4, h5, h6 {
 .auth-page {
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   background: linear-gradient(135deg, var(--color-black) 0%, #1c1c1c 40%, #2d2114 100%);
-  padding: var(--space-2xl);
+  padding: 80px var(--space-2xl);
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
@@ -2199,6 +2199,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .auth-card {
+  margin: auto;
   width: 100%;
   max-width: 440px;
   background: rgba(255, 255, 255, 0.03);

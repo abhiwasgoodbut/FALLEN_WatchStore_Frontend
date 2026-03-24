@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { FiUsers, FiPackage, FiShoppingBag, FiDollarSign, FiTrendingUp, FiAlertTriangle } from 'react-icons/fi'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import API from '../../api/axios'
 
 function AdminDashboard() {
@@ -75,6 +76,54 @@ function AdminDashboard() {
             <span className="stat-card__value">{overview.newUsersThisMonth}</span>
             <span className="stat-card__label">New Users (30d)</span>
           </div>
+        </div>
+      </div>
+
+      {/* Revenue Graph */}
+      <div className="admin-dash__section" style={{ marginTop: '2rem', marginBottom: '2rem' }}>
+        <h3 className="admin-dash__section-title">Revenue (Last 30 Days)</h3>
+        <div style={{ width: '100%', height: 300, background: '#fff', padding: '1rem', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+          {stats.dailyOrders && stats.dailyOrders.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={stats.dailyOrders} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#c9a84c" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#c9a84c" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
+                <XAxis 
+                  dataKey="_id" 
+                  tickFormatter={(val) => {
+                    const d = new Date(val);
+                    return `${d.getDate()} ${d.toLocaleString('default', { month: 'short' })}`;
+                  }} 
+                  tick={{ fill: '#6b6b6b', fontSize: 12 }} 
+                  axisLine={false} 
+                  tickLine={false} 
+                  dy={10}
+                />
+                <YAxis 
+                  tickFormatter={(val) => `₹${val}`} 
+                  tick={{ fill: '#6b6b6b', fontSize: 12 }} 
+                  axisLine={false} 
+                  tickLine={false} 
+                  dx={-10}
+                />
+                <Tooltip 
+                  formatter={(value) => [`₹${value}`, 'Revenue']}
+                  labelFormatter={(label) => new Date(label).toLocaleDateString()}
+                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                />
+                <Area type="monotone" dataKey="revenue" stroke="#c9a84c" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#a0a0a0' }}>
+              No revenue data for the last 30 days.
+            </div>
+          )}
         </div>
       </div>
 

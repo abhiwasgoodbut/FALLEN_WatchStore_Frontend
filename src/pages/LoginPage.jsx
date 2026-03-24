@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowLeft } from 'react-icons/fi'
-import { FcGoogle } from 'react-icons/fc'
+import { GoogleLogin } from '@react-oauth/google'
 import { useAuth } from '../context/AuthContext'
 import { useNotification } from '../context/NotificationContext'
 
@@ -10,7 +10,7 @@ function LoginPage() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
-  const { login, loading } = useAuth()
+  const { login, loading, googleLogin } = useAuth()
   const notify = useNotification()
   const navigate = useNavigate()
 
@@ -22,6 +22,18 @@ function LoginPage() {
       navigate('/')
     } else {
       notify.error(result.message)
+    }
+  }
+
+  const handleGoogleSuccess = async (response) => {
+    if (response.credential) {
+      const result = await googleLogin(response.credential)
+      if (result.success) {
+        notify.success('Welcome back! Logged in with Google')
+        navigate('/')
+      } else {
+        notify.error(result.message)
+      }
     }
   }
 
@@ -114,10 +126,14 @@ function LoginPage() {
 
           <div className="auth-form__divider">or continue with</div>
 
-          <div className="auth-form__social-btns">
-            <button type="button" className="auth-form__social-btn">
-              <FcGoogle size={18} /> Google
-            </button>
+          <div className="auth-form__social-btns" style={{ display: 'flex', justifyContent: 'center' }}>
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => notify.error('Google Sign-In failed')}
+              theme="outline"
+              size="large"
+              shape="pill"
+            />
           </div>
         </form>
 

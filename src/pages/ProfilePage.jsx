@@ -70,7 +70,11 @@ function ProfilePage() {
             <div className="profile__sidebar">
               <div className="profile__card">
                 <div className="profile__avatar">
-                  <FiUser />
+                  {user.avatar?.url ? (
+                    <img src={user.avatar.url} alt={user.firstName} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                  ) : (
+                    <FiUser />
+                  )}
                 </div>
                 <h2 className="profile__name">{user.firstName} {user.lastName}</h2>
                 <span className="profile__role">{user.role === 'admin' ? '⭐ Admin' : 'Customer'}</span>

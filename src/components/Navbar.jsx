@@ -80,7 +80,11 @@ function Navbar() {
             </Link>
             {isAuthenticated ? (
               <Link to="/profile" className="navbar__icon-btn" aria-label="Profile" title={`${user.firstName}'s Profile`}>
-                <FiUser />
+                {user.avatar?.url ? (
+                  <img src={user.avatar.url} alt={user.firstName} style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover' }} />
+                ) : (
+                  <FiUser />
+                )}
               </Link>
             ) : (
               <Link to="/login" className="navbar__icon-btn" aria-label="Account">

@@ -26,7 +26,17 @@ const userSchema = new mongoose.Schema({
     match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email'],
   },
   phone:    { type: String, trim: true },
-  password: { type: String, required: [true, 'Password is required'], minlength: 6, select: false },
+  password: { 
+    type: String, 
+    required: [
+      function() { return this.authProvider === 'local' }, 
+      'Password is required'
+    ], 
+    minlength: 6, 
+    select: false 
+  },
+  authProvider: { type: String, enum: ['local', 'google'], default: 'local' },
+  googleId: { type: String },
   role:     { type: String, enum: ['user', 'admin'], default: 'user' },
   avatar: {
     url:       { type: String, default: '' },

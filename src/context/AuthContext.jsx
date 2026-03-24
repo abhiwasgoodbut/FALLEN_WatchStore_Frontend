@@ -55,6 +55,19 @@ export function AuthProvider({ children }) {
     }
   }
 
+  const googleLogin = async (credential) => {
+    setLoading(true)
+    try {
+      const { data } = await API.post('/auth/google', { credential })
+      setUser(data)
+      return { success: true }
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || 'Google Login failed' }
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const logout = () => {
     setUser(null)
     localStorage.removeItem('fallen_user')
@@ -77,6 +90,7 @@ export function AuthProvider({ children }) {
       isAuthenticated: !!user,
       isAdmin: user?.role === 'admin',
       login,
+      googleLogin,
       register,
       logout,
       updateProfile,
