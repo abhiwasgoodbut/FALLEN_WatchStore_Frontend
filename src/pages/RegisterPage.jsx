@@ -32,7 +32,7 @@ function RegisterPage() {
     const { confirmPassword, ...registerData } = formData
     const result = await register(registerData)
     if (result.success) {
-      notify.success('Account created successfully! Welcome to FALLEN')
+      notify.success('Account created successfully! Welcome to YourCart')
       navigate('/')
     } else {
       notify.error(result.message)
@@ -43,7 +43,7 @@ function RegisterPage() {
     if (response.credential) {
       const result = await googleLogin(response.credential)
       if (result.success) {
-        notify.success('Welcome to FALLEN! Google login successful')
+        notify.success('Welcome to YourCart! Google login successful')
         navigate('/')
       } else {
         notify.error(result.message)
@@ -63,12 +63,12 @@ function RegisterPage() {
       <div className="auth-card" style={{ maxWidth: '500px' }}>
         <div className="auth-card__logo">
           <Link to="/">
-            FALLEN
+            YourCart
           </Link>
         </div>
 
         <h1 className="auth-card__title">Create Account</h1>
-        <p className="auth-card__subtitle">Join FALLEN and explore premium timepieces</p>
+        <p className="auth-card__subtitle">Join YourCart and explore premium timepieces</p>
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="auth-form__row">

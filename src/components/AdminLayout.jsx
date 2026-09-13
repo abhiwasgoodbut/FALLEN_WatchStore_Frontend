@@ -25,7 +25,7 @@ function AdminLayout() {
     <div className="admin">
       <aside className="admin__sidebar">
         <div className="admin__sidebar-header">
-          <h2 className="admin__logo">FALLEN</h2>
+          <h2 className="admin__logo">YourCart</h2>
           <span className="admin__logo-sub">Admin Panel</span>
         </div>
         <nav className="admin__nav">
