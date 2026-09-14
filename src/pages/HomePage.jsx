@@ -26,11 +26,11 @@ function HomePage() {
   const bestsellerProducts = allProducts.filter(p => p.isBestseller)
 
   const categories = [
-    { name: 'Luxury', icon: '👑', filter: 'luxury' },
-    { name: 'Classic', icon: '🎩', filter: 'classic' },
-    { name: 'Sport', icon: '⚡', filter: 'sport' },
-    { name: 'Smart', icon: '📱', filter: 'smart' },
-    { name: 'All Watches', icon: '⌚', filter: 'all' },
+    { name: 'Electronics', icon: '💻', filter: 'electronics' },
+    { name: 'Fashion', icon: '👕', filter: 'fashion' },
+    { name: 'Beauty', icon: '✨', filter: 'beauty' },
+    { name: 'Home', icon: '🏠', filter: 'home' },
+    { name: 'All Products', icon: '🛍️', filter: 'all' },
   ]
 
   return (
@@ -45,13 +45,13 @@ function HomePage() {
         </div>
         <div className="hero__container">
           <div className="hero__content">
-            <span className="hero__badge">New Collection 2026</span>
+            <span className="hero__badge">New Arrivals 2026</span>
             <h1 className="hero__title">
-              Luxury <span className="hero__title-accent">Timepieces</span> For The Modern Connoisseur
+              Premium <span className="hero__title-accent">Products</span> For Your Everyday Life
             </h1>
             <p className="hero__subtitle">
-              Discover our exclusive collection of premium watches from the world's most prestigious brands. 
-              Every piece tells a story of craftsmanship and elegance.
+              Discover our exclusive collection of hand-picked items across fashion, electronics, and beauty. 
+              Quality and elegance delivered directly to your door.
             </p>
             <div className="hero__actions">
               <Link to="/shop" className="btn btn--primary">
@@ -65,8 +65,8 @@ function HomePage() {
           <div className="hero__image">
             <div className="hero__image-circle"></div>
             <img
-              src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=600"
-              alt="Premium Watch"
+              src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600"
+              alt="Premium Shopping"
               className="hero__watch-img"
             />
           </div>
@@ -100,7 +100,7 @@ function HomePage() {
             <p className="section__label">Curated Selection</p>
             <h2 className="section__title">Featured Collection</h2>
             <p className="section__subtitle">
-              Hand-picked timepieces that define luxury and sophistication
+              Top-tier products that define quality and modern living
             </p>
           </div>
           <div className="products-grid">
@@ -120,19 +120,19 @@ function HomePage() {
       <section className="featured-banner">
         <div className="featured-banner__container">
           <div className="featured-banner__content">
-            <p className="featured-banner__label">Limited Edition</p>
-            <h2 className="featured-banner__title">The Art of Precision</h2>
+            <p className="featured-banner__label">Exclusive Deals</p>
+            <h2 className="featured-banner__title">Uncompromising Quality</h2>
             <p className="featured-banner__text">
-              Every watch in our collection undergoes rigorous quality checks. 
-              We partner only with authorized dealers to ensure 100% authenticity.
+              Every item in our store undergoes rigorous quality checks. 
+              We partner only with verified brands to ensure 100% satisfaction.
             </p>
             <Link to="/shop" className="btn btn--primary btn--sm">
               Explore Now <FiArrowRight />
             </Link>
           </div>
           <img
-            src="https://images.unsplash.com/photo-1587836374828-4dbafa94cf0e?w=400"
-            alt="Featured Watch"
+            src="https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=600"
+            alt="Featured Products"
             className="featured-banner__image"
           />
         </div>
@@ -145,7 +145,7 @@ function HomePage() {
             <p className="section__label">Most Popular</p>
             <h2 className="section__title">Bestsellers</h2>
             <p className="section__subtitle">
-              The most loved watches by our customers — timeless choices that never disappoint
+              The most loved items by our customers — premium choices that never disappoint
             </p>
           </div>
           <div className="products-grid">
@@ -166,7 +166,7 @@ function HomePage() {
         <div className="newsletter__container">
           <h2 className="newsletter__title">Stay in the Loop</h2>
           <p className="newsletter__text">
-            Subscribe to our newsletter and be the first to know about new arrivals, exclusive deals, and watch guides.
+            Subscribe to our newsletter and be the first to know about new arrivals, exclusive deals, and shopping guides.
           </p>
           <form className="newsletter__form" onSubmit={(e) => e.preventDefault()}>
             <input

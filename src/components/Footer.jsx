@@ -9,7 +9,7 @@ function Footer() {
           {/* Brand Column */}
           <div>
             <div className="footer__brand-name">
-              FALLEN
+              YourCart
             </div>
             <p className="footer__brand-text">
               Discover the finest collection of premium timepieces. Each watch in our collection is carefully curated 
@@ -66,7 +66,7 @@ function Footer() {
         </div>
 
         <div className="footer__bottom">
-          &copy; {new Date().getFullYear()} FALLEN. All Rights Reserved.
+          &copy; {new Date().getFullYear()} YourCart. All Rights Reserved.
         </div>
       </div>
     </footer>

@@ -49,7 +49,7 @@ function LoginPage() {
       <div className="auth-card">
         <div className="auth-card__logo">
           <Link to="/">
-            FALLEN
+            YourCart
           </Link>
         </div>
 

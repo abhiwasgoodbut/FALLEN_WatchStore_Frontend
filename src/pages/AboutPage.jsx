@@ -37,9 +37,9 @@ function AboutPage() {
       {/* Hero */}
       <div className="about-page__hero">
         <p className="about-page__hero-label">Our Story</p>
-        <h1 className="about-page__hero-title">The FALLEN Story</h1>
+        <h1 className="about-page__hero-title">The YourCart Story</h1>
         <p className="about-page__hero-text">
-          Born from a passion for horology, FALLEN was founded with a singular mission — 
+          Born from a passion for horology, YourCart was founded with a singular mission — 
           to make premium timepieces accessible to discerning collectors across India. 
           We believe that a watch is more than an accessory; it's a statement of character, 
           a mark of achievement, and a companion through life's greatest moments.

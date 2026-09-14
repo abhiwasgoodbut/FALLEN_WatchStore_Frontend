@@ -50,7 +50,8 @@ function Navbar() {
       <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
         <div className="navbar__container">
           <Link to="/" className="navbar__logo">
-            FALLEN
+            <img src="/logo.png" alt="Logo" className="site-logo" />
+            <span>YourCart</span>
           </Link>
 
           <div className="navbar__nav">

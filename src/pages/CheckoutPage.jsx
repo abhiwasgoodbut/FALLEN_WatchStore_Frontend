@@ -76,7 +76,7 @@ function CheckoutPage() {
         key: data.razorpayKeyId,
         amount: data.amount,
         currency: 'INR',
-        name: 'FALLEN Watches',
+        name: 'YourCart Watches',
         description: `Order — ${cartItems.length} item(s)`,
         order_id: data.razorpayOrderId,
         handler: async function (response) {
