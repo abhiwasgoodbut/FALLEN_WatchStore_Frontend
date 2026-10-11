@@ -9,7 +9,7 @@ function ShopPage() {
   const initialCategory = searchParams.get('category') || 'all'
   const [selectedCategory, setSelectedCategory] = useState(initialCategory)
   const [sortBy, setSortBy] = useState('default')
-  const [visibleCount, setVisibleCount] = useState(8)
+  const [visibleCount, setVisibleCount] = useState(12)
   const [dbProducts, setDbProducts] = useState([])
 
   // Fetch DB products on mount
@@ -23,20 +23,19 @@ function ShopPage() {
         }))
         setDbProducts(prods)
       })
-      .catch(() => { /* API down — just use static data */ })
+      .catch(() => {})
   }, [])
 
-  // Merge: DB products first, then static
+  // Merge: DB products first, then related local products!
   const allProducts = useMemo(() => {
     return [...dbProducts, ...staticProducts]
   }, [dbProducts])
 
   const categories = [
-    { label: 'All Watches', value: 'all' },
-    { label: 'Luxury', value: 'luxury' },
-    { label: 'Classic', value: 'classic' },
-    { label: 'Sport', value: 'sport' },
-    { label: 'Smart', value: 'smart' },
+    { label: 'All Products', value: 'all' },
+    { label: 'Home & Cleaning', value: 'home' },
+    { label: 'Smart Gadgets', value: 'smart' },
+    { label: 'Tools & Essentials', value: 'classic' },
   ]
 
   const brands = [...new Set(allProducts.map(p => p.brand))]

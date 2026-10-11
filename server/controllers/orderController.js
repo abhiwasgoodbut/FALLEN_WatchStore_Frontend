@@ -71,8 +71,12 @@ export const createOrder = async (req, res, next) => {
       itemsTotal += product.salePrice * item.quantity
     }
 
-    // Shipping: free above ₹5000
-    const shippingCharge = itemsTotal >= 5000 ? 0 : 99
+    // Shipping: free above ₹499
+    const shippingCharge = itemsTotal >= 499 ? 0 : 99
+
+    // Payment method & COD handling
+    const isCod = req.body.paymentMethod === 'cod'
+    const codFee = isCod ? 11 : 0
 
     // Apply coupon
     let discount = 0
@@ -87,9 +91,48 @@ export const createOrder = async (req, res, next) => {
       }
     }
 
-    const totalAmount = itemsTotal + shippingCharge - discount
+    const totalAmount = itemsTotal + shippingCharge + codFee - discount
 
-    // Create Razorpay order
+    // If COD, create order directly without opening Razorpay
+    if (isCod) {
+      const trackingId = 'TRK' + Date.now().toString().slice(-8)
+      const order = await Order.create({
+        user: req.user._id,
+        orderItems,
+        shippingAddress,
+        paymentInfo: {
+          method: 'cod',
+          status: 'pending',
+        },
+        itemsTotal,
+        shippingCharge: shippingCharge + codFee,
+        discount,
+        totalAmount,
+        couponApplied,
+        trackingId,
+      })
+
+      // Send confirmation email
+      try {
+        const fullUser = await User.findById(req.user._id)
+        if (fullUser?.email) {
+          await sendEmail({
+            to: fullUser.email,
+            subject: `Order Placed (Cash on Delivery) — ${trackingId}`,
+            html: buildOrderEmail(order, fullUser),
+          })
+        }
+      } catch (emailErr) {
+        // Continue even if email fails
+      }
+
+      return res.status(201).json({
+        isCod: true,
+        order,
+      })
+    }
+
+    // Otherwise create Razorpay order for online payment
     const razorpayOrder = await getRazorpay().orders.create({
       amount: Math.round(totalAmount * 100), // paise
       currency: 'INR',
@@ -103,6 +146,7 @@ export const createOrder = async (req, res, next) => {
       shippingAddress,
       paymentInfo: {
         razorpayOrderId: razorpayOrder.id,
+        method: 'online',
         status: 'pending',
       },
       itemsTotal,
@@ -237,11 +281,25 @@ export const getOrderById = async (req, res, next) => {
 // GET /api/orders/track/:trackingId — public track
 export const trackOrder = async (req, res, next) => {
   try {
-    const order = await Order.findOne({ trackingId: req.params.trackingId })
-      .select('orderStatus trackingId shippingAddress createdAt deliveredAt orderItems.name orderItems.quantity')
+    const rawId = req.params.trackingId?.trim()
+    // Support tracking by trackingId, awbNumber, or Mongo _id
+    const query = {
+      $or: [
+        { trackingId: rawId },
+        { awbNumber: rawId },
+        { dropdashOrderId: rawId },
+      ]
+    }
+    // If it's a valid ObjectId, also check _id
+    if (rawId && rawId.match(/^[0-9a-fA-F]{24}$/)) {
+      query.$or.push({ _id: rawId })
+    }
+
+    const order = await Order.findOne(query)
+      .select('orderStatus trackingId awbNumber courierPartner dropdashOrderId estimatedDeliveryDate trackingHistory shippingAddress createdAt deliveredAt orderItems totalAmount paymentInfo itemsTotal shippingCharge discount')
 
     if (!order) {
-      return res.status(404).json({ message: 'No order found with this tracking ID' })
+      return res.status(404).json({ message: 'No shipment found with this Tracking ID or AWB.' })
     }
 
     res.json(order)
@@ -250,7 +308,7 @@ export const trackOrder = async (req, res, next) => {
   }
 }
 
-// PUT /api/orders/:id/status — Admin
+// PUT /api/orders/:id/status — Admin update status & Dropdash logistics
 export const updateOrderStatus = async (req, res, next) => {
   try {
     const order = await Order.findById(req.params.id)
@@ -258,10 +316,33 @@ export const updateOrderStatus = async (req, res, next) => {
       return res.status(404).json({ message: 'Order not found' })
     }
 
-    order.orderStatus = req.body.status
+    const { status, awbNumber, courierPartner, dropdashOrderId, trackingNote, location } = req.body
 
-    if (req.body.status === 'delivered') {
+    if (status) {
+      order.orderStatus = status
+    }
+    if (awbNumber !== undefined) {
+      order.awbNumber = awbNumber
+    }
+    if (courierPartner !== undefined) {
+      order.courierPartner = courierPartner
+    }
+    if (dropdashOrderId !== undefined) {
+      order.dropdashOrderId = dropdashOrderId
+    }
+
+    if (status === 'delivered') {
       order.deliveredAt = new Date()
+    }
+
+    // Append to tracking activity timeline if status changed or note provided
+    if (status || trackingNote) {
+      order.trackingHistory.push({
+        status: status || order.orderStatus,
+        message: trackingNote || `Status updated to ${status?.replace(/_/g, ' ') || order.orderStatus}`,
+        location: location || `${order.shippingAddress?.city || 'Hub'}, India`,
+        timestamp: new Date(),
+      })
     }
 
     await order.save()
@@ -316,5 +397,102 @@ export const cancelOrder = async (req, res, next) => {
     res.json({ message: 'Order cancelled' })
   } catch (error) {
     next(error)
+  }
+}
+
+// POST /api/orders/webhook/dropdash — Automated webhook from Dropdash or courier
+export const handleDropdashWebhook = async (req, res) => {
+  try {
+    const payload = req.body || {}
+
+    // Support flexible payloads from Dropdash or courier webhooks
+    const lookupId =
+      payload.trackingId ||
+      payload.orderId ||
+      payload.order_id ||
+      payload.dropdashOrderId ||
+      payload.awbNumber ||
+      payload.awb
+
+    if (!lookupId) {
+      return res.status(400).json({ error: 'Missing trackingId, orderId, or AWB in payload' })
+    }
+
+    const query = {
+      $or: [
+        { trackingId: String(lookupId).trim() },
+        { awbNumber: String(lookupId).trim() },
+        { dropdashOrderId: String(lookupId).trim() },
+      ],
+    }
+
+    if (String(lookupId).match(/^[0-9a-fA-F]{24}$/)) {
+      query.$or.push({ _id: lookupId })
+    }
+
+    const order = await Order.findOne(query)
+    if (!order) {
+      return res.status(404).json({ error: `Order matching '${lookupId}' not found` })
+    }
+
+    // Map incoming status string to our internal orderStatus enum
+    const rawStatus = (payload.status || payload.current_status || payload.shipment_status || '').toLowerCase()
+    let mappedStatus = null
+
+    if (rawStatus.includes('deliver') && !rawStatus.includes('out')) {
+      mappedStatus = 'delivered'
+    } else if (rawStatus.includes('out_for_delivery') || rawStatus.includes('out for delivery')) {
+      mappedStatus = 'out_for_delivery'
+    } else if (rawStatus.includes('transit') || rawStatus.includes('in_transit')) {
+      mappedStatus = 'in_transit'
+    } else if (rawStatus.includes('dispatch') || rawStatus.includes('shipped') || rawStatus.includes('picked')) {
+      mappedStatus = 'dispatched'
+    } else if (rawStatus.includes('confirm')) {
+      mappedStatus = 'confirmed'
+    } else if (rawStatus.includes('cancel')) {
+      mappedStatus = 'cancelled'
+    } else if (rawStatus.includes('return') || rawStatus.includes('rto')) {
+      mappedStatus = 'returned'
+    }
+
+    if (mappedStatus) {
+      order.orderStatus = mappedStatus
+      if (mappedStatus === 'delivered') {
+        order.deliveredAt = new Date()
+      }
+    }
+
+    if (payload.awb || payload.awbNumber) {
+      order.awbNumber = payload.awb || payload.awbNumber
+    }
+    if (payload.courier || payload.courierPartner) {
+      order.courierPartner = payload.courier || payload.courierPartner
+    }
+    if (payload.dropdashOrderId || payload.dropdash_order_id) {
+      order.dropdashOrderId = payload.dropdashOrderId || payload.dropdash_order_id
+    }
+
+    // Append to live tracking scan history
+    const message = payload.message || payload.activity || payload.scan_remark || `Status: ${mappedStatus || rawStatus}`
+    const location = payload.location || payload.city || payload.hub || ''
+
+    order.trackingHistory.push({
+      status: mappedStatus || order.orderStatus,
+      message,
+      location,
+      timestamp: payload.timestamp ? new Date(payload.timestamp) : new Date(),
+    })
+
+    await order.save()
+
+    return res.status(200).json({
+      success: true,
+      message: 'Order updated from Dropdash webhook',
+      trackingId: order.trackingId,
+      orderStatus: order.orderStatus,
+    })
+  } catch (err) {
+    console.error('Dropdash webhook error:', err)
+    return res.status(500).json({ error: 'Webhook processing failed', details: err.message })
   }
 }

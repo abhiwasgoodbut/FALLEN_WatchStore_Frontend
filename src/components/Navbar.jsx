@@ -4,13 +4,15 @@ import { FiSearch, FiHeart, FiShoppingBag, FiUser, FiX, FiGrid } from 'react-ico
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
 import { useAuth } from '../context/AuthContext'
-import products from '../data/products'
+import staticProducts from '../data/products'
+import API from '../api/axios'
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchProducts, setSearchProducts] = useState([])
   const { cartCount } = useCart()
   const { wishlistCount } = useWishlist()
   const { user, isAuthenticated, isAdmin } = useAuth()
@@ -22,6 +24,23 @@ function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  useEffect(() => {
+    if (searchOpen && searchProducts.length === 0) {
+      API.get('/products?limit=100')
+        .then(({ data }) => {
+          const prods = (data.products || data).map(p => ({
+            ...p,
+            id: p._id,
+            image: p.images?.[0]?.url || 'https://via.placeholder.com/400?text=No+Image',
+          }))
+          setSearchProducts([...prods, ...staticProducts])
+        })
+        .catch(() => {
+          setSearchProducts(staticProducts)
+        })
+    }
+  }, [searchOpen])
+
   const navLinks = [
     { to: '/', label: 'Home' },
     { to: '/shop', label: 'Shop' },
@@ -32,9 +51,9 @@ function Navbar() {
   ]
 
   const searchResults = searchQuery.length > 1
-    ? products.filter(p =>
+    ? searchProducts.filter(p =>
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.brand.toLowerCase().includes(searchQuery.toLowerCase())
+        p.brand?.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : []
 

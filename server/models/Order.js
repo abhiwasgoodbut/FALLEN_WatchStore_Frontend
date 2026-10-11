@@ -42,11 +42,42 @@ const orderSchema = new mongoose.Schema({
   totalAmount:   { type: Number, required: true },
   orderStatus: {
     type: String,
-    enum: ['processing', 'shipped', 'delivered', 'cancelled'],
+    enum: [
+      'processing',
+      'confirmed',
+      'dispatched',
+      'in_transit',
+      'out_for_delivery',
+      'delivered',
+      'cancelled',
+      'returned'
+    ],
     default: 'processing',
   },
   couponApplied: { type: String },
   trackingId:    { type: String },
+  // Logistics & Dropdash Integration Fields
+  courierPartner: {
+    type: String,
+    default: 'Delhivery', // Dropdash courier partner (Delhivery, BlueDart, XpressBees, etc.)
+  },
+  awbNumber: {
+    type: String, // Air Waybill / Courier tracking number
+  },
+  dropdashOrderId: {
+    type: String, // Dropdash system order ID
+  },
+  estimatedDeliveryDate: {
+    type: Date,
+  },
+  trackingHistory: [
+    {
+      status: String,
+      message: String,
+      location: String,
+      timestamp: { type: Date, default: Date.now },
+    }
+  ],
   deliveredAt:   { type: Date },
 }, { timestamps: true })
 

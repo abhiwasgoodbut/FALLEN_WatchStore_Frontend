@@ -40,6 +40,27 @@ const productSchema = new mongoose.Schema({
     of: String,
     default: {},
   },
+  aboutItem: {
+    type: [String],
+    default: [],
+  },
+  videoUrl: {
+    type: String,
+    trim: true,
+    default: '',
+  },
+  videoPosition: {
+    type: Number,
+    default: 2,
+  },
+  trustBadges: {
+    isCodAvailable: { type: Boolean, default: true },
+    returnPolicy: { type: String, default: '7 Days Replacement' },
+    warranty: { type: String, default: '1 Year Warranty' },
+    freeDelivery: { type: Boolean, default: true },
+    topBrand: { type: Boolean, default: true },
+    secureTransaction: { type: Boolean, default: true },
+  },
   stock: {
     type: Number,
     default: 10,

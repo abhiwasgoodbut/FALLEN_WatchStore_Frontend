@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { FiArrowRight } from 'react-icons/fi'
+import { FiArrowRight, FiX } from 'react-icons/fi'
 import ProductCard from '../components/ProductCard'
 import staticProducts from '../data/products'
+import { dummyReviews, ratingSummary } from '../data/reviews'
 import API from '../api/axios'
 
 function HomePage() {
   const [dbProducts, setDbProducts] = useState([])
+  const [previewImage, setPreviewImage] = useState(null)
 
   useEffect(() => {
     API.get('/products?limit=100')
@@ -22,8 +24,12 @@ function HomePage() {
   }, [])
 
   const allProducts = [...dbProducts, ...staticProducts]
-  const featuredProducts = allProducts.filter(p => p.isFeatured)
-  const bestsellerProducts = allProducts.filter(p => p.isBestseller)
+  const featuredProducts = allProducts.filter(p => p.isFeatured).length > 0
+    ? allProducts.filter(p => p.isFeatured)
+    : allProducts
+  const bestsellerProducts = allProducts.filter(p => p.isBestseller).length > 0
+    ? allProducts.filter(p => p.isBestseller)
+    : allProducts
 
   const categories = [
     { name: 'Electronics', icon: '💻', filter: 'electronics' },
@@ -160,6 +166,89 @@ function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Customer Reviews Section on Frontpage */}
+      <section className="section home-reviews">
+        <div className="section__container">
+          <div className="section__header">
+            <p className="section__label">Verified Social Proof</p>
+            <h2 className="section__title">What Our Customers Say</h2>
+            <div className="home-reviews__overall-badge">
+              <span className="home-reviews__score">{ratingSummary.average}</span>
+              <div className="home-reviews__stars">
+                <span className="star-filled">★</span>
+                <span className="star-filled">★</span>
+                <span className="star-filled">★</span>
+                <span className="star-filled">★</span>
+                <span className="star-half">★</span>
+              </div>
+              <span className="home-reviews__count">({ratingSummary.totalRatings.toLocaleString()} verified ratings)</span>
+            </div>
+          </div>
+
+          <div className="home-reviews__grid">
+            {dummyReviews.slice(0, 3).map((rev) => (
+              <div key={rev.id} className="home-reviews__card">
+                <div className="home-reviews__card-header">
+                  <img src={rev.avatar} alt={rev.author} className="home-reviews__avatar" />
+                  <div>
+                    <h4 className="home-reviews__author">{rev.author}</h4>
+                    <span className="home-reviews__verified">✓ Verified Purchase</span>
+                  </div>
+                </div>
+                <div className="home-reviews__stars-sm">
+                  {[...Array(rev.rating)].map((_, i) => (
+                    <span key={i} className="star-filled">★</span>
+                  ))}
+                </div>
+                <h5 className="home-reviews__card-title">"{rev.title}"</h5>
+                <p className="home-reviews__card-text">{rev.content}</p>
+                {rev.images && rev.images.length > 0 && (
+                  <div
+                    className="home-reviews__image-preview"
+                    onClick={() => setPreviewImage({ url: rev.images[0], author: rev.author, title: rev.title })}
+                    title="Click to view full image"
+                  >
+                    <img src={rev.images[0]} alt="Customer review" />
+                    <span className="home-reviews__zoom-hint">🔍 Enlarge</span>
+                  </div>
+                )}
+                <div className="home-reviews__footer">
+                  <span className="home-reviews__date">{rev.date}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Review Image Lightbox Modal - Only Image & Extra Large */}
+      {previewImage && (
+        <div
+          className="review-lightbox"
+          onClick={() => setPreviewImage(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="review-lightbox__dialog" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className="review-lightbox__close-btn"
+              onClick={() => setPreviewImage(null)}
+              aria-label="Close image viewer"
+            >
+              <FiX />
+            </button>
+            <div className="review-lightbox__image-wrap">
+              <img
+                src={previewImage.url || previewImage}
+                alt="Enlarged review image"
+                className="review-lightbox__img"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Newsletter */}
       <section className="newsletter">

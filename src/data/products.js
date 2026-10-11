@@ -1,307 +1,253 @@
 const products = [
   {
     id: 1,
-    name: "Royal Oak Chronograph",
-    brand: "AUDEMARS PIGUET",
-    price: 185000,
-    salePrice: 149999,
-    category: "luxury",
-    image: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=500",
-    description: "A masterpiece of haute horlogerie, the Royal Oak Chronograph features a stunning stainless steel case with the iconic octagonal bezel. This timepiece combines sporty elegance with exceptional craftsmanship.",
-    specs: {
-      "Movement": "Automatic",
-      "Case Size": "41mm",
-      "Water Resistance": "50m",
-      "Material": "Stainless Steel",
-      "Crystal": "Sapphire"
+    name: "Extendable Microfiber Feather Duster (100 Inch)",
+    brand: "SENVOX",
+    price: 1299,
+    salePrice: 699,
+    category: "home",
+    image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&auto=format&fit=crop&q=80",
+    images: [
+      { url: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&auto=format&fit=crop&q=80", public_id: "prod1_1" },
+      { url: "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=800&auto=format&fit=crop&q=80", public_id: "prod1_2" },
+      { url: "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=800&auto=format&fit=crop&q=80", public_id: "prod1_3" }
+    ],
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    videoPosition: 2,
+    description: "Extra-long telescopic microfiber feather duster with bendable head. Reach high ceilings, fan blades, and corners safely without a ladder.",
+    aboutItem: [
+      "[Extra Long Telescopic Pole]: Extends up to 100 inches to reach high ceilings, fans, and roof corners without a ladder.",
+      "[Bendable Microfiber Head]: Easily bends to any angle to clean ceiling fan tops, air vents, and behind furniture.",
+      "[Washable & Reusable]: Simply unscrew the microfiber head and rinse in warm water for like-new cleaning performance.",
+      "[Scratch-Free Soft Tip]: Features a soft protective rubber tip to prevent scratching walls, light fixtures, or painted surfaces.",
+      "[Space-Saving Storage]: Built-in hanging tail hole on the handle for neat storage behind doors or in closets."
+    ],
+    trustBadges: {
+      isCodAvailable: true,
+      returnPolicy: "10 Days Replacement",
+      warranty: "1 Year Warranty",
+      freeDelivery: true,
+      topBrand: true,
+      secureTransaction: true
     },
+    specs: {
+      "Material": "Microfiber & Stainless Steel",
+      "Extended Length": "100 Inches (8.3 Feet)",
+      "Head Type": "360° Bendable & Washable",
+      "Color": "Sky Blue & Silver",
+      "Item Weight": "320 Grams"
+    },
+    stock: 25,
     isFeatured: true,
-    isBestseller: true
+    isBestseller: true,
+    averageRating: 4.8,
+    numReviews: 124
   },
   {
     id: 2,
-    name: "Submariner Date",
-    brand: "ROLEX",
-    price: 245000,
-    salePrice: 199999,
-    category: "luxury",
-    image: "https://images.unsplash.com/photo-1587836374828-4dbafa94cf0e?w=500",
-    description: "The Submariner Date is the quintessential diver's watch. A reference among divers' watches, this model features a unidirectional rotatable bezel and luminescent display.",
-    specs: {
-      "Movement": "Automatic",
-      "Case Size": "41mm",
-      "Water Resistance": "300m",
-      "Material": "Oystersteel",
-      "Crystal": "Sapphire"
+    name: "Cordless Electric Spin Scrubber (8-in-1)",
+    brand: "CLEANPRO",
+    price: 3499,
+    salePrice: 1899,
+    category: "home",
+    image: "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=800&auto=format&fit=crop&q=80",
+    images: [
+      { url: "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=800&auto=format&fit=crop&q=80", public_id: "prod2_1" },
+      { url: "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=800&auto=format&fit=crop&q=80", public_id: "prod2_2" },
+      { url: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&auto=format&fit=crop&q=80", public_id: "prod2_3" }
+    ],
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+    videoPosition: 2,
+    description: "Rechargeable electric power spin scrubber with 8 interchangeable brush heads and adjustable extension handle for effortless bathroom and tile cleaning.",
+    aboutItem: [
+      "[Powerful High-Torque Motor]: Up to 450 RPM dual-speed rotation for deep cleaning bathroom tiles, grout, and bathtubs.",
+      "[8 Replaceable Brush Heads]: Includes dome brush, flat brush, corner brush, sponge, and scouring pads for every surface.",
+      "[Adjustable Extension Handle]: Telescopic rod extends from 25 to 54 inches to clean floors and ceilings without bending down.",
+      "[IPX7 Waterproof Design]: Safe to use in wet environments like showers, sinks, kitchen countertops, and car wheels.",
+      "[Fast Type-C Charging]: 2500mAh rechargeable battery delivers up to 90 minutes of continuous cleaning per charge."
+    ],
+    trustBadges: {
+      isCodAvailable: true,
+      returnPolicy: "7 Days Replacement",
+      warranty: "1 Year Brand Warranty",
+      freeDelivery: true,
+      topBrand: true,
+      secureTransaction: true
     },
+    specs: {
+      "Battery Capacity": "2500mAh Rechargeable",
+      "Rotation Speed": "350 - 450 RPM",
+      "Charging Port": "USB Type-C",
+      "Brush Attachments": "8 Interchangeable Heads",
+      "Waterproof Level": "IPX7 Body Waterproof"
+    },
+    stock: 18,
     isFeatured: true,
-    isBestseller: true
+    isBestseller: true,
+    averageRating: 4.9,
+    numReviews: 215
   },
   {
     id: 3,
-    name: "Speedmaster Moonwatch",
-    brand: "OMEGA",
-    price: 165000,
-    salePrice: 1399,
-    category: "classic",
-    image: "https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?w=500",
-    description: "The legendary Moonwatch that accompanied astronauts on their journey to the moon. An icon of space exploration and precision engineering.",
-    specs: {
-      "Movement": "Manual",
-      "Case Size": "42mm",
-      "Water Resistance": "50m",
-      "Material": "Stainless Steel",
-      "Crystal": "Hesalite"
+    name: "Multipurpose Gap Cleaning Brush Set (4-Pack)",
+    brand: "HOMEGLOW",
+    price: 599,
+    salePrice: 299,
+    category: "home",
+    image: "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=800&auto=format&fit=crop&q=80",
+    images: [
+      { url: "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=800&auto=format&fit=crop&q=80", public_id: "prod3_1" },
+      { url: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&auto=format&fit=crop&q=80", public_id: "prod3_2" }
+    ],
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+    videoPosition: 1,
+    description: "Ultra-fine hard bristle crevice cleaning brushes designed to reach tight gaps, window tracks, tile lines, and kitchen faucet grooves.",
+    aboutItem: [
+      "[Ultra-Fine Hard Bristles]: Ultra-thin angled head effortlessly slips into narrow window tracks, tile grout, and faucet grooves.",
+      "[Durable Alloy Core]: Stiff alloy-reinforced body prevents bending or snapping during heavy scrubbing.",
+      "[Ergonomic Anti-Slip Grip]: Contoured handle provides comfortable control even with wet and soapy hands.",
+      "[Versatile Application]: Ideal for sliding door tracks, sink corners, gas stoves, air conditioner filters, and bathroom gaps."
+    ],
+    trustBadges: {
+      isCodAvailable: false, // Online Payment Only
+      returnPolicy: "7 Days Replacement",
+      warranty: "6 Months Warranty",
+      freeDelivery: true,
+      topBrand: false,
+      secureTransaction: true
     },
+    specs: {
+      "Pack Size": "4 Cleaning Brushes",
+      "Bristle Material": "High-Density PET Bristles",
+      "Handle Material": "Reinforced ABS Plastic",
+      "Color": "Matte Black & Gray"
+    },
+    stock: 40,
     isFeatured: true,
-    isBestseller: false
+    isBestseller: false,
+    averageRating: 4.7,
+    numReviews: 88
   },
   {
     id: 4,
-    name: "Big Bang Unico",
-    brand: "HUBLOT",
-    price: 325000,
-    salePrice: 279999,
-    category: "luxury",
-    image: "https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=500",
-    description: "Bold and innovative, the Big Bang Unico embodies Hublot's Art of Fusion philosophy. A dramatic timepiece with an in-house movement visible through the skeleton dial.",
-    specs: {
-      "Movement": "Automatic",
-      "Case Size": "44mm",
-      "Water Resistance": "100m",
-      "Material": "Titanium",
-      "Crystal": "Sapphire"
+    name: "Self-Wringing Microfiber Flat Mop & Bucket System",
+    brand: "SENVOX",
+    price: 2199,
+    salePrice: 1199,
+    category: "home",
+    image: "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=800&auto=format&fit=crop&q=80",
+    images: [
+      { url: "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=800&auto=format&fit=crop&q=80", public_id: "prod4_1" },
+      { url: "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=800&auto=format&fit=crop&q=80", public_id: "prod4_2" }
+    ],
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyBlazes.mp4",
+    videoPosition: 2,
+    description: "Hands-free squeeze flat mop with 2-chamber wash and dry bucket. Features 360-degree swivel head and ultra-absorbent reusable microfiber pads.",
+    aboutItem: [
+      "[Hands-Free Dual Chamber Bucket]: One groove for washing and one for wringing, keeping your hands completely clean and dry.",
+      "[360° Rotatable Swivel Head]: Ultra-slim flat design glides underneath beds, sofas, cabinets, and around table legs.",
+      "[Ultra-Absorbent Microfiber Pads]: Traps pet hair, liquid spills, and fine dirt effectively on hardwood, tile, and marble.",
+      "[Compact & Space-Saving]: Vertical storage bucket design takes up minimal space in laundry rooms or under sinks."
+    ],
+    trustBadges: {
+      isCodAvailable: true,
+      returnPolicy: "10 Days Replacement",
+      warranty: "1 Year Warranty",
+      freeDelivery: true,
+      topBrand: true,
+      secureTransaction: true
     },
-    isFeatured: true,
-    isBestseller: false
+    specs: {
+      "Bucket Capacity": "8 Liters Dual Chamber",
+      "Mop Plate Size": "33cm x 12cm",
+      "Handle Length": "128cm Stainless Steel",
+      "Pads Included": "2 Reusable Microfiber Pads"
+    },
+    stock: 15,
+    isFeatured: false,
+    isBestseller: true,
+    averageRating: 4.8,
+    numReviews: 142
   },
   {
     id: 5,
-    name: "Navitimer B01",
-    brand: "BREITLING",
-    price: 135000,
-    salePrice: 114999,
-    category: "classic",
-    image: "https://images.unsplash.com/photo-1622434641406-a158123450f9?w=500",
-    description: "An iconic pilot's watch with the legendary circular slide rule bezel. The Navitimer is the ultimate instrument for aviation enthusiasts and watch collectors alike.",
-    specs: {
-      "Movement": "Automatic",
-      "Case Size": "43mm",
-      "Water Resistance": "30m",
-      "Material": "Stainless Steel",
-      "Crystal": "Sapphire"
+    name: "2-in-1 Window Glass Squeegee Cleaner with Spray",
+    brand: "CLEANPRO",
+    price: 899,
+    salePrice: 449,
+    category: "home",
+    image: "https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?w=800&auto=format&fit=crop&q=80",
+    images: [
+      { url: "https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?w=800&auto=format&fit=crop&q=80", public_id: "prod5_1" },
+      { url: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&auto=format&fit=crop&q=80", public_id: "prod5_2" }
+    ],
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+    videoPosition: 2,
+    description: "Multifunctional glass cleaning squeegee equipped with a built-in water sprayer and double-sided microfiber wiping cloth for sparkling windows.",
+    aboutItem: [
+      "[Integrated Spray Bottle]: Built-in water reservoir lets you spray and wipe in one seamless single-handed motion.",
+      "[Streak-Free Silicone Blade]: Flexible rubber wiper blade ensures crystal-clear, streak-free window and mirror drying.",
+      "[Double-Sided Microfiber Scrubber]: Removable lint-free cloth effortlessly loosens tough grime and bird droppings.",
+      "[Multi-Surface Cleaning]: Perfect for car windshields, shower glass doors, high mirrors, and kitchen tile walls."
+    ],
+    trustBadges: {
+      isCodAvailable: true,
+      returnPolicy: "7 Days Replacement",
+      warranty: "6 Months Warranty",
+      freeDelivery: true,
+      topBrand: false,
+      secureTransaction: true
     },
+    specs: {
+      "Spray Bottle Capacity": "250ml",
+      "Squeegee Width": "26 cm",
+      "Cloth Type": "Machine-Washable Microfiber"
+    },
+    stock: 30,
     isFeatured: false,
-    isBestseller: true
+    isBestseller: true,
+    averageRating: 4.6,
+    numReviews: 67
   },
   {
     id: 6,
-    name: "Carrera Chronograph",
-    brand: "TAG HEUER",
-    price: 95000,
-    salePrice: 79999,
-    category: "sport",
-    image: "https://images.unsplash.com/photo-1612817159949-195b6eb9e31a?w=500",
-    description: "Born on the racetrack, the Carrera is a legendarily sporty chronograph. Clean lines and bold design make it the perfect companion for those who live life at full speed.",
-    specs: {
-      "Movement": "Automatic",
-      "Case Size": "44mm",
-      "Water Resistance": "100m",
-      "Material": "Stainless Steel",
-      "Crystal": "Sapphire"
+    name: "Silicone Toilet Bowl Cleaning Brush with Holder",
+    brand: "HOMEGLOW",
+    price: 699,
+    salePrice: 349,
+    category: "home",
+    image: "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=800&auto=format&fit=crop&q=80",
+    images: [
+      { url: "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=800&auto=format&fit=crop&q=80", public_id: "prod6_1" },
+      { url: "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=800&auto=format&fit=crop&q=80", public_id: "prod6_2" }
+    ],
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
+    videoPosition: 2,
+    description: "Modern hygienic TPR silicone toilet brush with quick-drying ventilated holder and non-scratch flexible bristles.",
+    aboutItem: [
+      "[Flexible TPR Silicone Bristles]: Reaches deep under the rim and pipe traps without scratching porcelain ceramic glaze.",
+      "[Anti-Drip Quick-Drying Base]: Ventilated hollow holder allows water to evaporate quickly, preventing bad odors.",
+      "[Non-Stick & Easy to Clean]: Hair and dirt easily rinse off with tap water, keeping the brush hygienic and clean.",
+      "[Wall Mount or Floor Standing]: Includes self-adhesive wall mount hook to free up bathroom floor space."
+    ],
+    trustBadges: {
+      isCodAvailable: true,
+      returnPolicy: "7 Days Replacement",
+      warranty: "1 Year Warranty",
+      freeDelivery: true,
+      topBrand: true,
+      secureTransaction: true
     },
-    isFeatured: false,
-    isBestseller: true
-  },
-  {
-    id: 7,
-    name: "Portugieser Chronograph",
-    brand: "IWC",
-    price: 175000,
-    salePrice: 149999,
-    category: "classic",
-    image: "https://images.unsplash.com/photo-1539874754764-5a96559165b0?w=500",
-    description: "The Portugieser Chronograph stands for pure elegance with its clear dial and timeless design. A watch that transcends trends and remains forever stylish.",
     specs: {
-      "Movement": "Automatic",
-      "Case Size": "41mm",
-      "Water Resistance": "30m",
-      "Material": "Stainless Steel",
-      "Crystal": "Sapphire"
+      "Material": "TPR Silicone & Rustproof Aluminum",
+      "Installation": "Wall-Mounted or Free-Standing",
+      "Color": "White & Slate Gray"
     },
+    stock: 50,
     isFeatured: true,
-    isBestseller: false
-  },
-  {
-    id: 8,
-    name: "Santos de Cartier",
-    brand: "CARTIER",
-    price: 195000,
-    salePrice: 169999,
-    category: "luxury",
-    image: "https://images.unsplash.com/photo-1600003014755-ba31aa59c4b6?w=500",
-    description: "First designed in 1904 for aviator Alberto Santos-Dumont, this is one of the first wristwatches ever made. Timeless design meets modern innovation.",
-    specs: {
-      "Movement": "Automatic",
-      "Case Size": "39.8mm",
-      "Water Resistance": "100m",
-      "Material": "Stainless Steel & Gold",
-      "Crystal": "Sapphire"
-    },
-    isFeatured: true,
-    isBestseller: true
-  },
-  {
-    id: 9,
-    name: "G-Shock MR-G",
-    brand: "CASIO",
-    price: 45000,
-    salePrice: 38999,
-    category: "sport",
-    image: "https://images.unsplash.com/photo-1517945929820-1407bbfa129f?w=500",
-    description: "The ultimate G-Shock, crafted from titanium and built to withstand anything. Combining G-Shock's legendary toughness with premium materials.",
-    specs: {
-      "Movement": "Quartz (Tough Solar)",
-      "Case Size": "49.8mm",
-      "Water Resistance": "200m",
-      "Material": "Titanium",
-      "Crystal": "Sapphire"
-    },
-    isFeatured: false,
-    isBestseller: true
-  },
-  {
-    id: 10,
-    name: "Luminor Marina",
-    brand: "PANERAI",
-    price: 155000,
-    salePrice: 134999,
-    category: "sport",
-    image: "https://images.unsplash.com/photo-1594534475808-b18fc33b045e?w=500",
-    description: "Originally created for the Italian Navy, the Luminor Marina is an icon of Italian design. Its patented crown-protecting bridge device is instantly recognizable.",
-    specs: {
-      "Movement": "Automatic",
-      "Case Size": "44mm",
-      "Water Resistance": "300m",
-      "Material": "Stainless Steel",
-      "Crystal": "Sapphire"
-    },
-    isFeatured: false,
-    isBestseller: false
-  },
-  {
-    id: 11,
-    name: "Aqua Terra 150M",
-    brand: "OMEGA",
-    price: 125000,
-    salePrice: 109999,
-    category: "classic",
-    image: "https://images.unsplash.com/photo-1609587312208-cea54be969e7?w=500",
-    description: "The Aqua Terra bridges the gap between elegant dress watch and robust sports watch. Its teak-pattern dial is inspired by the wooden decks of luxury sailing yachts.",
-    specs: {
-      "Movement": "Automatic (Co-Axial)",
-      "Case Size": "41mm",
-      "Water Resistance": "150m",
-      "Material": "Stainless Steel",
-      "Crystal": "Sapphire"
-    },
-    isFeatured: true,
-    isBestseller: false
-  },
-  {
-    id: 12,
-    name: "PRX Powermatic 80",
-    brand: "TISSOT",
-    price: 42000,
-    salePrice: 35999,
-    category: "classic",
-    image: "https://images.unsplash.com/photo-1585123334904-845d60e97b29?w=500",
-    description: "A modern classic with retro DNA, the PRX combines 1970s integrated bracelet design with a contemporary proportioned case. Exceptional value in Swiss watchmaking.",
-    specs: {
-      "Movement": "Automatic",
-      "Case Size": "40mm",
-      "Water Resistance": "100m",
-      "Material": "Stainless Steel",
-      "Crystal": "Sapphire"
-    },
-    isFeatured: false,
-    isBestseller: true
-  },
-  {
-    id: 13,
-    name: "Prospex Diver",
-    brand: "SEIKO",
-    price: 38000,
-    salePrice: 32999,
-    category: "sport",
-    image: "https://images.unsplash.com/photo-1533139502658-0198f920d8e8?w=500",
-    description: "Built for professional divers, the Prospex range represents Seiko's commitment to functionality. Exceptional build quality and water resistance at an incredible value.",
-    specs: {
-      "Movement": "Automatic",
-      "Case Size": "45mm",
-      "Water Resistance": "200m",
-      "Material": "Stainless Steel",
-      "Crystal": "Hardlex"
-    },
-    isFeatured: false,
-    isBestseller: false
-  },
-  {
-    id: 14,
-    name: "Khaki Field Mechanical",
-    brand: "HAMILTON",
-    price: 52000,
-    salePrice: 44999,
-    category: "classic",
-    image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=500",
-    description: "Rooted in military heritage, the Khaki Field is the definitive field watch. Clean, legible, and built tough — it's an everyday essential for the modern adventurer.",
-    specs: {
-      "Movement": "Manual",
-      "Case Size": "38mm",
-      "Water Resistance": "50m",
-      "Material": "Stainless Steel",
-      "Crystal": "Sapphire"
-    },
-    isFeatured: false,
-    isBestseller: false
-  },
-  {
-    id: 15,
-    name: "Galaxy Watch Ultra",
-    brand: "SAMSUNG",
-    price: 59999,
-    salePrice: 52999,
-    category: "smart",
-    image: "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=500",
-    description: "The most advanced smartwatch for the adventurous spirit. Track your fitness, monitor your health, and stay connected with premium build quality.",
-    specs: {
-      "Movement": "Digital",
-      "Case Size": "47mm",
-      "Water Resistance": "100m (10ATM)",
-      "Material": "Titanium Grade 4",
-      "Display": "Super AMOLED"
-    },
-    isFeatured: false,
-    isBestseller: true
-  },
-  {
-    id: 16,
-    name: "Apple Watch Ultra 2",
-    brand: "APPLE",
-    price: 89999,
-    salePrice: 84999,
-    category: "smart",
-    image: "https://images.unsplash.com/photo-1551816230-ef5deaed4a26?w=500",
-    description: "Designed for the most extreme environments and athletes. The ultimate smartwatch with precision GPS, health sensors, and an incredibly bright display.",
-    specs: {
-      "Movement": "Digital",
-      "Case Size": "49mm",
-      "Water Resistance": "100m (WR100)",
-      "Material": "Titanium",
-      "Display": "OLED Always-On Retina"
-    },
-    isFeatured: true,
-    isBestseller: true
+    isBestseller: false,
+    averageRating: 4.7,
+    numReviews: 95
   }
 ]
 
