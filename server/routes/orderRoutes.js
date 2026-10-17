@@ -4,7 +4,7 @@ import {
   getOrderById, trackOrder, updateOrderStatus, getAllOrders, cancelOrder,
   handleDropdashWebhook,
 } from '../controllers/orderController.js'
-import { protect, admin } from '../middleware/auth.js'
+import { protect, admin, optionalProtect } from '../middleware/auth.js'
 
 const router = express.Router()
 
@@ -12,8 +12,8 @@ const router = express.Router()
 router.get('/track/:trackingId', trackOrder)
 router.post('/webhook/dropdash', handleDropdashWebhook)
 
-// Protected
-router.post('/shopify-checkout', protect, async (req, res, next) => {
+// Shopify Direct Checkout (Guest & Auth friendly)
+router.post('/shopify-checkout', optionalProtect, async (req, res, next) => {
   try {
     const { cartItems } = req.body
     if (!cartItems || cartItems.length === 0) {

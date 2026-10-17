@@ -5,9 +5,10 @@ import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { useWishlist } from '../context/WishlistContext'
 import { useNotification } from '../context/NotificationContext'
+import API from '../api/axios'
 
 function CartPage() {
-  const { cartItems, cartCount, cartTotal, updateQuantity, removeFromCart } = useCart()
+  const { cartItems, cartCount, cartTotal, updateQuantity, removeFromCart, clearCart } = useCart()
   const { isAuthenticated } = useAuth()
   const { toggleWishlist } = useWishlist()
   const notify = useNotification()
@@ -21,27 +22,23 @@ function CartPage() {
   const [checkingOut, setCheckingOut] = useState(false)
 
   const handleCheckout = async () => {
-    if (!isAuthenticated) {
-      notify.warning('Please login to proceed to checkout')
-      navigate('/login')
-      return
-    }
+    if (cartItems.length === 0) return
 
     setCheckingOut(true)
     try {
-      // Check if cart contains Shopify/Dropdash products
+      // Create official Shopify checkout session
       const { data: shopifyData } = await API.post('/orders/shopify-checkout', {
         cartItems: cartItems,
       })
 
       if (shopifyData?.isShopify && shopifyData?.checkoutUrl) {
-        notify.success('Redirecting to checkout... 🛍️')
+        notify.success('Redirecting to official Shopify Checkout... 🛍️')
         clearCart()
         window.location.href = shopifyData.checkoutUrl
         return
       }
     } catch (e) {
-      // Fallback to internal checkout page if network error or non-Shopify items
+      console.error('Shopify checkout generation error:', e)
     } finally {
       setCheckingOut(false)
     }
