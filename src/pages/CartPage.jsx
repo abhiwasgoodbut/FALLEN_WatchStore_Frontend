@@ -287,8 +287,9 @@ function CartPage() {
                   type="button"
                   className="amazon-btn amazon-btn--yellow amazon-btn--full amazon-btn--lg"
                   onClick={handleCheckout}
+                  disabled={checkingOut}
                 >
-                  Proceed to Buy
+                  {checkingOut ? 'Preparing Checkout...' : 'Proceed to Buy'}
                 </button>
 
                 {/* Trust Badges under checkout button */}
