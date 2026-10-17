@@ -67,6 +67,9 @@ function CheckoutPage() {
     })
   }
 
+  // Check if cart contains any Shopify synced products
+  const hasShopifyProducts = cartItems.some(item => Boolean(item.shopifyProductId || item.shopifyVariantId))
+
   const handlePlaceOrder = async () => {
     if (cartItems.length === 0) return
 
@@ -79,22 +82,22 @@ function CheckoutPage() {
     setLoading(true)
 
     try {
-      // 1. Direct Shopify Checkout Integration (Option A)
-      // Creates a live checkout session on Shopify store (kmecmi-a0.myshopify.com)
-      const { data: shopifyData } = await API.post('/orders/shopify-checkout', {
-        cartItems: cartItems,
-        shippingAddress: address,
-      })
+      // 1. If it's a Shopify/Dropdash product, send to Shopify Checkout
+      if (hasShopifyProducts) {
+        const { data: shopifyData } = await API.post('/orders/shopify-checkout', {
+          cartItems: cartItems,
+          shippingAddress: address,
+        })
 
-      if (shopifyData?.checkoutUrl) {
-        notify.success('Redirecting to official Shopify Checkout... 🛍️')
-        // Clear local cart and redirect user to Shopify
-        clearCart()
-        window.location.href = shopifyData.checkoutUrl
-        return
+        if (shopifyData?.checkoutUrl) {
+          notify.success('Redirecting to official Shopify Checkout... 🛍️')
+          clearCart()
+          window.location.href = shopifyData.checkoutUrl
+          return
+        }
       }
 
-      // Fallback: Cash on Delivery (COD) Flow
+      // 2. Normal / Custom Products: Proceed with our Backend (COD or Razorpay)
       if (paymentMethod === 'cod') {
         const { data } = await API.post('/orders', {
           shippingAddress: address,
@@ -107,7 +110,7 @@ function CheckoutPage() {
         return
       }
 
-      // 2. Online Razorpay Checkout
+      // Online Razorpay Checkout for Normal Products
       const loaded = await loadRazorpayScript()
       if (!loaded) {
         notify.error('Failed to load payment gateway. Please check your internet connection.')
@@ -475,9 +478,11 @@ function CheckoutPage() {
                     >
                       {loading
                         ? 'Processing...'
+                        : hasShopifyProducts
+                        ? `Proceed to Shopify Checkout (₹${totalAmount.toLocaleString()})`
                         : paymentMethod === 'cod'
                         ? `Place your COD order (₹${totalAmount.toLocaleString()})`
-                        : `Place your order and Pay (₹${totalAmount.toLocaleString()})`}
+                        : `Place your order and Pay with Razorpay (₹${totalAmount.toLocaleString()})`}
                     </button>
                     <p className="amazon-checkout__policy-note">
                       By placing your order, you agree to YourCart's Conditions of Use & Sale and Privacy Notice.
@@ -511,7 +516,7 @@ function CheckoutPage() {
                 {loading
                   ? 'Processing...'
                   : currentStep === 3
-                  ? (paymentMethod === 'cod' ? 'Place your COD order' : 'Place your order')
+                  ? (hasShopifyProducts ? 'Proceed to Shopify Checkout' : (paymentMethod === 'cod' ? 'Place your COD order' : 'Pay with Razorpay'))
                   : `Continue to Step ${currentStep + 1}`}
               </button>
 

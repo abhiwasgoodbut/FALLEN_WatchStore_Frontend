@@ -16,6 +16,8 @@ function HomePage() {
         const prods = (data.products || data).map(p => ({
           ...p,
           id: p._id,
+          shopifyProductId: p.shopifyProductId,
+          shopifyVariantId: p.shopifyVariantId,
           image: p.images?.[0]?.url || 'https://via.placeholder.com/400?text=No+Image',
         }))
         setDbProducts(prods)

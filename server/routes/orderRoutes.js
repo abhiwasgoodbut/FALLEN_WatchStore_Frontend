@@ -23,7 +23,7 @@ router.post('/shopify-checkout', protect, async (req, res, next) => {
     const { createShopifyCheckoutUrl } = await import('../services/shopifyService.js')
     const Product = (await import('../models/Product.js')).default
 
-    // Find line items with Shopify variant IDs
+    // Find line items that belong to Shopify
     const lineItems = []
 
     for (const item of cartItems) {
@@ -37,21 +37,21 @@ router.post('/shopify-checkout', protect, async (req, res, next) => {
         }
       }
 
-      // Default to cleaning mop variant if item is a static demo or doesn't have one yet
-      if (!variantId) {
-        // Find any existing shopify product variant to test
-        const sample = await Product.findOne({ shopifyVariantId: { $exists: true } })
-        variantId = sample?.shopifyVariantId || 'gid://shopify/ProductVariant/48118359818401'
+      if (variantId) {
+        lineItems.push({
+          variantId,
+          quantity: item.quantity || 1,
+        })
       }
+    }
 
-      lineItems.push({
-        variantId,
-        quantity: item.quantity || 1,
-      })
+    // If no items in cart belong to Shopify, tell frontend to use internal Razorpay/COD
+    if (lineItems.length === 0) {
+      return res.json({ success: false, isShopify: false, message: 'No Shopify products in cart' })
     }
 
     const checkoutUrl = await createShopifyCheckoutUrl(lineItems)
-    res.json({ success: true, checkoutUrl })
+    res.json({ success: true, isShopify: true, checkoutUrl })
   } catch (err) {
     console.error('Shopify checkout creation error:', err)
     res.status(500).json({ success: false, message: 'Could not create Shopify checkout', error: err.message })

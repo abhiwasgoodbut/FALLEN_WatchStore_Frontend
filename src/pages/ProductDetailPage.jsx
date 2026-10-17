@@ -42,6 +42,8 @@ function ProductDetailPage() {
         const p = {
           ...data,
           id: data._id,
+          shopifyProductId: data.shopifyProductId,
+          shopifyVariantId: data.shopifyVariantId,
           image: data.images?.[0]?.url || 'https://via.placeholder.com/400?text=No+Image',
         }
         setProduct(p)
