@@ -195,7 +195,7 @@ export const syncShopifyProductsToDatabase = async () => {
  * @param {Object} customerAddress - shipping address details (optional)
  * @returns {Promise<string>} Checkout URL
  */
-export const createShopifyCheckoutUrl = (lineItems = []) => {
+export const createShopifyCheckoutUrl = (lineItems = [], customerAddress = null) => {
   return new Promise((resolve, reject) => {
     const domain = process.env.SHOPIFY_STORE_DOMAIN || 'kmecmi-a0.myshopify.com'
     const token = process.env.SHOPIFY_STOREFRONT_TOKEN
@@ -215,16 +215,41 @@ export const createShopifyCheckoutUrl = (lineItems = []) => {
     }
     `
 
+    const input = {
+      lines: lineItems.map(item => ({
+        merchandiseId: item.variantId,
+        quantity: item.quantity || 1,
+      })),
+    }
+
+    // Pre-fill customer address and contact so Shopify does NOT ask again!
+    if (customerAddress) {
+      const names = (customerAddress.fullName || '').trim().split(/\s+/)
+      const firstName = names[0] || 'Customer'
+      const lastName = names.slice(1).join(' ') || ''
+      const rawPhone = (customerAddress.phone || '').replace(/[^0-9]/g, '')
+      const formattedPhone = rawPhone ? (rawPhone.startsWith('91') ? `+${rawPhone}` : `+91${rawPhone.slice(-10)}`) : undefined
+
+      input.buyerIdentity = {
+        email: customerAddress.email || undefined,
+        phone: formattedPhone,
+        deliveryAddressPreferences: [
+          {
+            deliveryAddress: {
+              address1: [customerAddress.addressLine1, customerAddress.addressLine2].filter(Boolean).join(', ') || 'Address',
+              city: customerAddress.city || 'City',
+              province: customerAddress.state || '',
+              zip: customerAddress.pincode || '',
+              country: 'IN',
+            },
+          },
+        ],
+      }
+    }
+
     const postData = JSON.stringify({
       query,
-      variables: {
-        input: {
-          lines: lineItems.map(item => ({
-            merchandiseId: item.variantId,
-            quantity: item.quantity || 1,
-          })),
-        },
-      },
+      variables: { input },
     })
 
     const options = {

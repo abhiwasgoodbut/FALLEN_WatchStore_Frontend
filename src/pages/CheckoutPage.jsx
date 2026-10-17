@@ -82,19 +82,18 @@ function CheckoutPage() {
     setLoading(true)
 
     try {
-      // 1. If it's a Shopify/Dropdash product, send to Shopify Checkout
-      if (hasShopifyProducts) {
-        const { data: shopifyData } = await API.post('/orders/shopify-checkout', {
-          cartItems: cartItems,
-          shippingAddress: address,
-        })
+      // 1. Check with Backend if any items in the cart are Shopify products
+      const { data: shopifyData } = await API.post('/orders/shopify-checkout', {
+        cartItems: cartItems,
+        shippingAddress: address,
+      })
 
-        if (shopifyData?.checkoutUrl) {
-          notify.success('Redirecting to official Shopify Checkout... 🛍️')
-          clearCart()
-          window.location.href = shopifyData.checkoutUrl
-          return
-        }
+      // If backend confirms it's a Shopify product with a checkout URL, redirect immediately
+      if (shopifyData?.isShopify && shopifyData?.checkoutUrl) {
+        notify.success('Redirecting to official Shopify Checkout... 🛍️')
+        clearCart()
+        window.location.href = shopifyData.checkoutUrl
+        return
       }
 
       // 2. Normal / Custom Products: Proceed with our Backend (COD or Razorpay)

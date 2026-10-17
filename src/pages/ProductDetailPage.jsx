@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { FiHeart, FiMinus, FiPlus, FiShoppingBag, FiTruck, FiShield, FiRefreshCw, FiAward, FiLock, FiDollarSign, FiCreditCard, FiX } from 'react-icons/fi'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
@@ -12,6 +12,7 @@ import API from '../api/axios'
 
 function ProductDetailPage() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const { addToCart } = useCart()
   const { toggleWishlist, isInWishlist } = useWishlist()
   const notify = useNotification()
@@ -21,6 +22,34 @@ function ProductDetailPage() {
   const [loading, setLoading] = useState(true)
   const [activeMediaIndex, setActiveMediaIndex] = useState(0)
   const [previewImage, setPreviewImage] = useState(null)
+  const [buyingNow, setBuyingNow] = useState(false)
+
+  const handleBuyNow = async () => {
+    setBuyingNow(true)
+    try {
+      const { data: shopifyData } = await API.post('/orders/shopify-checkout', {
+        cartItems: [{ ...product, quantity }],
+      })
+
+      if (shopifyData?.isShopify && shopifyData?.checkoutUrl) {
+        notify.success('Opening Shopify Checkout... ⚡')
+        window.location.href = shopifyData.checkoutUrl
+        return
+      }
+
+      for (let i = 0; i < quantity; i++) {
+        addToCart(product)
+      }
+      navigate('/checkout')
+    } catch (e) {
+      for (let i = 0; i < quantity; i++) {
+        addToCart(product)
+      }
+      navigate('/checkout')
+    } finally {
+      setBuyingNow(false)
+    }
+  }
 
   useEffect(() => {
     setLoading(true)
@@ -277,8 +306,17 @@ function ProductDetailPage() {
             </div>
 
             {/* Actions */}
-            <div className="product-detail__actions">
-              <button className="btn btn--primary" style={{ flex: 1 }} onClick={handleAddToCart}>
+            <div className="product-detail__actions" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="btn btn--secondary"
+                style={{ flex: 1, minWidth: '150px', background: '#ffa41c', borderColor: '#ff8f00', color: '#0f1111', fontWeight: 700 }}
+                onClick={handleBuyNow}
+                disabled={buyingNow}
+              >
+                {buyingNow ? 'Opening Checkout...' : '⚡ Buy Now'}
+              </button>
+              <button className="btn btn--primary" style={{ flex: 1, minWidth: '150px' }} onClick={handleAddToCart}>
                 <FiShoppingBag /> Add to Cart
               </button>
               <button className={`product-detail__wishlist-btn ${wishlisted ? 'wishlisted' : ''}`} onClick={handleToggleWishlist}>

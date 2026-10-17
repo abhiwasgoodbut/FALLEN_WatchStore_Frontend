@@ -18,12 +18,34 @@ function CartPage() {
   const isFreeDelivery = cartTotal >= FREE_SHIPPING_THRESHOLD
   const amountToFreeDelivery = Math.max(0, FREE_SHIPPING_THRESHOLD - cartTotal)
 
-  const handleCheckout = () => {
+  const [checkingOut, setCheckingOut] = useState(false)
+
+  const handleCheckout = async () => {
     if (!isAuthenticated) {
       notify.warning('Please login to proceed to checkout')
       navigate('/login')
       return
     }
+
+    setCheckingOut(true)
+    try {
+      // Check if cart contains Shopify/Dropdash products
+      const { data: shopifyData } = await API.post('/orders/shopify-checkout', {
+        cartItems: cartItems,
+      })
+
+      if (shopifyData?.isShopify && shopifyData?.checkoutUrl) {
+        notify.success('Redirecting to checkout... 🛍️')
+        clearCart()
+        window.location.href = shopifyData.checkoutUrl
+        return
+      }
+    } catch (e) {
+      // Fallback to internal checkout page if network error or non-Shopify items
+    } finally {
+      setCheckingOut(false)
+    }
+
     navigate('/checkout')
   }
 

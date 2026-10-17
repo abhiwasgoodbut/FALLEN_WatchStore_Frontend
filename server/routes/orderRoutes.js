@@ -50,7 +50,10 @@ router.post('/shopify-checkout', protect, async (req, res, next) => {
       return res.json({ success: false, isShopify: false, message: 'No Shopify products in cart' })
     }
 
-    const checkoutUrl = await createShopifyCheckoutUrl(lineItems)
+    const userEmail = req.user?.email || req.body.shippingAddress?.email
+    const addressToPass = req.body.shippingAddress ? { ...req.body.shippingAddress, email: userEmail } : null
+
+    const checkoutUrl = await createShopifyCheckoutUrl(lineItems, addressToPass)
     res.json({ success: true, isShopify: true, checkoutUrl })
   } catch (err) {
     console.error('Shopify checkout creation error:', err)
