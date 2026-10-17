@@ -7,7 +7,7 @@ import { useNotification } from '../context/NotificationContext'
 import ProductCard from '../components/ProductCard'
 import ProductVideoPlayer, { getVideoThumbnail } from '../components/ProductVideoPlayer'
 import staticProducts from '../data/products'
-import { dummyReviews, ratingSummary } from '../data/reviews'
+import { getProductReviews, ratingSummary } from '../data/reviews'
 import API from '../api/axios'
 
 function ProductDetailPage() {
@@ -23,6 +23,14 @@ function ProductDetailPage() {
   const [activeMediaIndex, setActiveMediaIndex] = useState(0)
   const [previewImage, setPreviewImage] = useState(null)
   const [buyingNow, setBuyingNow] = useState(false)
+
+  const { reviews: currentReviews = [], ratingSummary: currentRatingSummary = { average: 4.8, totalRatings: 120, breakdown: [] } } = useMemo(() => {
+    try {
+      return getProductReviews(product) || { reviews: [], ratingSummary: { average: 4.8, totalRatings: 120, breakdown: [] } }
+    } catch {
+      return { reviews: [], ratingSummary: { average: 4.8, totalRatings: 120, breakdown: [] } }
+    }
+  }, [product])
 
   const handleBuyNow = async () => {
     setBuyingNow(true)
@@ -255,15 +263,21 @@ function ProductDetailPage() {
             <div className="product-detail__brand">{product.brand}</div>
             <h1 className="product-detail__name">{product.name}</h1>
 
-            {/* Amazon Rating Snippet (4.3 ★★★★☆ 250 ratings) */}
+            {/* Amazon Rating Snippet */}
             <div className="product-detail__amazon-rating">
-              <span className="product-detail__rating-score">{ratingSummary.average}</span>
-              <div className="product-detail__stars" aria-label={`${ratingSummary.average} out of 5 stars`}>
-                <span className="star-filled">★</span>
-                <span className="star-filled">★</span>
-                <span className="star-filled">★</span>
-                <span className="star-filled">★</span>
-                <span className="star-half">★</span>
+              <span className="product-detail__rating-score">{currentRatingSummary?.average ?? 4.8}</span>
+              <div className="product-detail__stars" aria-label={`${currentRatingSummary?.average ?? 4.8} out of 5 stars`}>
+                {[...Array(5)].map((_, i) => {
+                  const avg = Number(currentRatingSummary?.average) || 5
+                  return (
+                    <span
+                      key={i}
+                      className={i < Math.floor(avg) ? 'star-filled' : i < avg ? 'star-half' : 'star-empty'}
+                    >
+                      ★
+                    </span>
+                  )
+                })}
               </div>
               <a
                 href="#customer-reviews"
@@ -273,7 +287,7 @@ function ProductDetailPage() {
                   document.getElementById('customer-reviews')?.scrollIntoView({ behavior: 'smooth' })
                 }}
               >
-                {ratingSummary.totalRatings.toLocaleString()} ratings
+                {(currentRatingSummary?.totalRatings || 0).toLocaleString()} ratings
               </a>
               <span className="product-detail__rating-divider">|</span>
               <span className="product-detail__answered-badge">42 answered questions</span>
@@ -452,21 +466,27 @@ function ProductDetailPage() {
               
               <div className="customer-reviews__score-row">
                 <div className="customer-reviews__stars-large">
-                  <span className="star-filled">★</span>
-                  <span className="star-filled">★</span>
-                  <span className="star-filled">★</span>
-                  <span className="star-filled">★</span>
-                  <span className="star-half">★</span>
+                  {[...Array(5)].map((_, i) => {
+                    const avg = Number(currentRatingSummary?.average) || 5
+                    return (
+                      <span
+                        key={i}
+                        className={i < Math.floor(avg) ? 'star-filled' : i < avg ? 'star-half' : 'star-empty'}
+                      >
+                        ★
+                      </span>
+                    )
+                  })}
                 </div>
-                <span className="customer-reviews__score-text">{ratingSummary.average} out of 5</span>
+                <span className="customer-reviews__score-text">{currentRatingSummary?.average ?? 4.8} out of 5</span>
               </div>
               <p className="customer-reviews__global-count">
-                {ratingSummary.totalRatings.toLocaleString()} global ratings
+                {(currentRatingSummary?.totalRatings || 0).toLocaleString()} global ratings
               </p>
 
               {/* Progress bars */}
               <div className="customer-reviews__breakdown-list">
-                {ratingSummary.breakdown.map((row) => (
+                {(currentRatingSummary.breakdown || []).map((row) => (
                   <div key={row.stars} className="customer-reviews__bar-row">
                     <span className="customer-reviews__bar-label">{row.stars} star</span>
                     <div className="customer-reviews__bar-track">
@@ -510,7 +530,7 @@ function ProductDetailPage() {
               </div>
 
               <div className="customer-reviews__list">
-                {dummyReviews.map((rev) => (
+                {currentReviews.map((rev) => (
                   <article key={rev.id} className="customer-reviews__card">
                     {/* User profile */}
                     <div className="customer-reviews__user-row">

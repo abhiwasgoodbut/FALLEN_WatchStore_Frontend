@@ -51,15 +51,16 @@ export const login = async (req, res, next) => {
 
 // POST /api/auth/google
 import { OAuth2Client } from 'google-auth-library'
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
 export const googleLogin = async (req, res, next) => {
   try {
     const { credential } = req.body
     
+    const googleClientId = process.env.GOOGLE_CLIENT_ID
+    const client = new OAuth2Client(googleClientId)
     const ticket = await client.verifyIdToken({
       idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: googleClientId,
     })
     
     const { email, given_name, family_name, picture, sub } = ticket.getPayload()

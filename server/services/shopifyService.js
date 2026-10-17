@@ -144,7 +144,7 @@ export const syncShopifyProductsToDatabase = async () => {
 
     const updateData = {
       name: item.title,
-      brand: (item.vendor || 'DROPDASH').toUpperCase(),
+      brand: (item.vendor && item.vendor.toUpperCase() !== 'DROPDASH') ? item.vendor : 'YourCart',
       description: item.description || item.title,
       price: price,
       salePrice: salePrice,

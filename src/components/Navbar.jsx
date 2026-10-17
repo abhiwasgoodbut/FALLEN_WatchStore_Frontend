@@ -159,7 +159,7 @@ function Navbar() {
           <input
             className="search-overlay__input"
             type="text"
-            placeholder="Search for watches..."
+            placeholder="Search products, essentials, brands..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             autoFocus={searchOpen}

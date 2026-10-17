@@ -1,4 +1,12 @@
+import dns from 'node:dns'
 import mongoose from 'mongoose'
+
+// Ensure Node uses reliable DNS resolvers on Windows for MongoDB Atlas SRV lookup
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1'])
+} catch (e) {
+  // Ignore if custom dns servers cannot be set
+}
 
 const connectDB = async () => {
   try {
@@ -11,3 +19,4 @@ const connectDB = async () => {
 }
 
 export default connectDB
+

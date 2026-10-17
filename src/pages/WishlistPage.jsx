@@ -23,7 +23,7 @@ function WishlistPage() {
             <div className="wishlist-page__empty">
               <div className="wishlist-page__empty-icon"><FiHeart /></div>
               <p className="wishlist-page__empty-text">Your wishlist is empty</p>
-              <Link to="/shop" className="btn btn--primary">Explore Watches</Link>
+              <Link to="/shop" className="btn btn--primary">Explore Products</Link>
             </div>
           ) : (
             <>
