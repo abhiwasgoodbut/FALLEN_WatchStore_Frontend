@@ -165,13 +165,39 @@ function AdminProducts() {
     }
   }
 
+  const [syncingShopify, setSyncingShopify] = useState(false)
+
+  const handleSyncShopify = async () => {
+    setSyncingShopify(true)
+    try {
+      const { data } = await API.post('/products/sync-shopify')
+      notify.success(data.message || 'Synced products from Shopify!')
+      fetchProducts()
+    } catch (e) {
+      notify.error(e.response?.data?.message || 'Failed to sync with Shopify')
+    } finally {
+      setSyncingShopify(false)
+    }
+  }
+
   return (
     <div>
       <div className="admin__page-header">
         <h1 className="admin__page-title">Products ({products.length})</h1>
-        <button className="btn btn--primary btn--sm" onClick={() => { resetForm(); setShowForm(!showForm) }}>
-          <FiPlus /> {showForm ? 'Cancel' : 'Add Product'}
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            type="button"
+            className="btn btn--secondary btn--sm"
+            onClick={handleSyncShopify}
+            disabled={syncingShopify}
+            style={{ background: '#007185', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            {syncingShopify ? 'Syncing Shopify...' : '🔄 Sync Shopify Products'}
+          </button>
+          <button className="btn btn--primary btn--sm" onClick={() => { resetForm(); setShowForm(!showForm) }}>
+            <FiPlus /> {showForm ? 'Cancel' : 'Add Product'}
+          </button>
+        </div>
       </div>
 
       {showForm && (

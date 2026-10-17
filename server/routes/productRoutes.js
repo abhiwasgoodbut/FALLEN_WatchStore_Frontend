@@ -2,6 +2,7 @@ import express from 'express'
 import {
   getProducts, getProductById, createProduct,
   updateProduct, deleteProduct, getFeaturedProducts, getBestsellers,
+  syncShopify,
 } from '../controllers/productController.js'
 import { protect, admin } from '../middleware/auth.js'
 
@@ -9,6 +10,7 @@ const router = express.Router()
 
 router.get('/featured', getFeaturedProducts)
 router.get('/bestsellers', getBestsellers)
+router.post('/sync-shopify', syncShopify)
 router.get('/', getProducts)
 router.get('/:id', getProductById)
 router.post('/', protect, admin, createProduct)

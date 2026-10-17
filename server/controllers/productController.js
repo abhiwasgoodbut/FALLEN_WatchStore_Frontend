@@ -117,3 +117,21 @@ export const getBestsellers = async (req, res, next) => {
     next(error)
   }
 }
+
+// POST /api/products/sync-shopify
+export const syncShopify = async (req, res, next) => {
+  try {
+    const { syncShopifyProductsToDatabase } = await import('../services/shopifyService.js')
+    const results = await syncShopifyProductsToDatabase()
+    res.json({
+      success: true,
+      message: `Successfully synced ${results.length} products from Shopify`,
+      syncedCount: results.length,
+      results: results.map(r => ({ action: r.action, title: r.product.name, id: r.product._id }))
+    })
+  } catch (error) {
+    console.error('Shopify sync error:', error)
+    res.status(500).json({ success: false, message: 'Shopify sync failed', error: error.message })
+  }
+}
+

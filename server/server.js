@@ -63,4 +63,10 @@ app.listen(PORT, () => {
   ║   Mode: ${process.env.NODE_ENV || 'development'}                   ║
   ╚═══════════════════════════════════════╝
   `)
+
+  // Automatically sync Shopify products in background on startup
+  import('./services/shopifyService.js')
+    .then(({ syncShopifyProductsToDatabase }) => syncShopifyProductsToDatabase())
+    .then((results) => console.log(`[Shopify Sync] Synced ${results.length} products on startup`))
+    .catch((err) => console.log('[Shopify Sync Note]', err.message))
 })

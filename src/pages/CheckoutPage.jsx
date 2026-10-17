@@ -79,7 +79,22 @@ function CheckoutPage() {
     setLoading(true)
 
     try {
-      // 1. Cash on Delivery (COD) Flow
+      // 1. Direct Shopify Checkout Integration (Option A)
+      // Creates a live checkout session on Shopify store (kmecmi-a0.myshopify.com)
+      const { data: shopifyData } = await API.post('/orders/shopify-checkout', {
+        cartItems: cartItems,
+        shippingAddress: address,
+      })
+
+      if (shopifyData?.checkoutUrl) {
+        notify.success('Redirecting to official Shopify Checkout... 🛍️')
+        // Clear local cart and redirect user to Shopify
+        clearCart()
+        window.location.href = shopifyData.checkoutUrl
+        return
+      }
+
+      // Fallback: Cash on Delivery (COD) Flow
       if (paymentMethod === 'cod') {
         const { data } = await API.post('/orders', {
           shippingAddress: address,

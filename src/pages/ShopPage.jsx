@@ -34,6 +34,7 @@ function ShopPage() {
   const categories = [
     { label: 'All Products', value: 'all' },
     { label: 'Home & Cleaning', value: 'home' },
+    { label: 'Fitness & Sports', value: 'sport' },
     { label: 'Smart Gadgets', value: 'smart' },
     { label: 'Tools & Essentials', value: 'classic' },
   ]

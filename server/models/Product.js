@@ -29,11 +29,19 @@ const productSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ['luxury', 'classic', 'sport', 'smart'],
+    default: 'home',
+  },
+  shopifyProductId: {
+    type: String,
+    sparse: true,
+    index: true,
+  },
+  shopifyVariantId: {
+    type: String,
   },
   images: [{
     url:       { type: String, required: true },
-    public_id: { type: String, required: true },
+    public_id: { type: String, default: 'shopify_image' },
   }],
   specs: {
     type: Map,
