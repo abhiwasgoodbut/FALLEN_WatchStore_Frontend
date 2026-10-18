@@ -175,8 +175,28 @@ export const syncShopifyProductsToDatabase = async () => {
     })
 
     if (product) {
-      // Update existing
-      Object.assign(product, updateData)
+      // Smart Sync: Keep checkout-critical fields synced with Shopify
+      product.shopifyProductId = item.id
+      product.shopifyVariantId = rawVariant?.id || product.shopifyVariantId
+      product.price = price
+      product.salePrice = salePrice
+      product.stock = rawVariant?.availableForSale === false ? 0 : (product.stock || 20)
+
+      // Preserve rich content edited from your custom admin panel
+      // Only set from Shopify if product didn't have a customized description/bullets
+      if (!product.description || product.description.trim() === item.title.trim()) {
+        product.description = item.description || item.title
+      }
+      if (!product.aboutItem || product.aboutItem.length === 0) {
+        product.aboutItem = updateData.aboutItem
+      }
+      if (!product.images || product.images.length === 0) {
+        product.images = images
+      }
+      if (!product.category) {
+        product.category = category
+      }
+
       await product.save()
       results.push({ action: 'updated', product })
     } else {
