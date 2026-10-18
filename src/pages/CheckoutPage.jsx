@@ -30,15 +30,17 @@ function CheckoutPage() {
       if (shopifyData?.isShopify && shopifyData?.checkoutUrl) {
         setCheckoutUrl(shopifyData.checkoutUrl)
         notify.success('Redirecting to official Shopify checkout... 🛍️')
-        clearCart()
-        window.location.href = shopifyData.checkoutUrl
+        setTimeout(() => {
+          window.location.assign(shopifyData.checkoutUrl)
+        }, 150)
         return
       } else {
         setError(shopifyData?.message || 'No Shopify checkout session could be created.')
       }
     } catch (err) {
       console.error('Checkout error:', err)
-      setError('Could not connect to Shopify checkout. Please try again.')
+      const errorMsg = err.response?.data?.message || err.message || 'Could not connect to Shopify checkout. Please try again.'
+      setError(errorMsg)
     } finally {
       setLoading(false)
     }
@@ -48,7 +50,7 @@ function CheckoutPage() {
     if (cartItems.length > 0) {
       initiateShopifyCheckout()
     }
-  }, [cartItems.length])
+  }, [])
 
   if (cartItems.length === 0 && !checkoutUrl) {
     return (
@@ -133,22 +135,26 @@ function CheckoutPage() {
                 )}
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <button
-                    type="button"
-                    className="amazon-btn amazon-btn--yellow amazon-btn--lg"
-                    style={{ width: '100%', fontSize: '1rem', fontWeight: 700, padding: '14px' }}
-                    onClick={() => {
-                      if (checkoutUrl) {
-                        clearCart()
-                        window.location.href = checkoutUrl
-                      } else {
-                        initiateShopifyCheckout()
-                      }
-                    }}
-                    disabled={loading}
-                  >
-                    {loading ? 'Preparing Checkout...' : '⚡ Proceed to Shopify Checkout Now'}
-                  </button>
+                  {checkoutUrl ? (
+                    <a
+                      href={checkoutUrl}
+                      className="amazon-btn amazon-btn--yellow amazon-btn--lg"
+                      style={{ width: '100%', fontSize: '1rem', fontWeight: 700, padding: '14px', textDecoration: 'none', display: 'block', textAlign: 'center' }}
+                      onClick={() => clearCart()}
+                    >
+                      ⚡ Proceed to Shopify Checkout Now
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      className="amazon-btn amazon-btn--yellow amazon-btn--lg"
+                      style={{ width: '100%', fontSize: '1rem', fontWeight: 700, padding: '14px' }}
+                      onClick={() => initiateShopifyCheckout()}
+                      disabled={loading}
+                    >
+                      {loading ? 'Preparing Checkout...' : '⚡ Retry Shopify Checkout'}
+                    </button>
+                  )}
 
                   <Link to="/cart" style={{ color: '#007185', fontSize: '0.9rem', textDecoration: 'none', marginTop: '6px' }}>
                     ← Return to Shopping Cart
@@ -187,21 +193,25 @@ function CheckoutPage() {
           {/* Right Column: Order Summary Card */}
           <aside className="amazon-checkout__sidebar">
             <div className="amazon-checkout__summary-card">
-              <button
-                type="button"
-                className="amazon-btn amazon-btn--yellow amazon-btn--full amazon-btn--lg"
-                onClick={() => {
-                  if (checkoutUrl) {
-                    clearCart()
-                    window.location.href = checkoutUrl
-                  } else {
-                    initiateShopifyCheckout()
-                  }
-                }}
-                disabled={loading}
-              >
-                {loading ? 'Preparing...' : 'Proceed to Checkout'}
-              </button>
+              {checkoutUrl ? (
+                <a
+                  href={checkoutUrl}
+                  className="amazon-btn amazon-btn--yellow amazon-btn--full amazon-btn--lg"
+                  style={{ textDecoration: 'none', display: 'block', textAlign: 'center' }}
+                  onClick={() => clearCart()}
+                >
+                  Proceed to Checkout
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  className="amazon-btn amazon-btn--yellow amazon-btn--full amazon-btn--lg"
+                  onClick={() => initiateShopifyCheckout()}
+                  disabled={loading}
+                >
+                  {loading ? 'Preparing...' : 'Proceed to Checkout'}
+                </button>
+              )}
 
               <div className="amazon-checkout__summary-divider"></div>
 

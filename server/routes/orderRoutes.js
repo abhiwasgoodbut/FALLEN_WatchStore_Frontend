@@ -16,6 +16,7 @@ router.post('/webhook/dropdash', handleDropdashWebhook)
 router.post('/shopify-checkout', optionalProtect, async (req, res, next) => {
   try {
     const { cartItems } = req.body
+    console.log(`[Shopify Checkout] Incoming request for ${cartItems?.length || 0} item(s):`, JSON.stringify(cartItems))
     if (!cartItems || cartItems.length === 0) {
       return res.status(400).json({ message: 'Cart is empty' })
     }
