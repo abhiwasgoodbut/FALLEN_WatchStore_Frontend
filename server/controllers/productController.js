@@ -1,8 +1,18 @@
 import Product from '../models/Product.js'
 
+let lastShopifySyncTime = 0
+
 // GET /api/products — list with filter, sort, search, pagination
 export const getProducts = async (req, res, next) => {
   try {
+    // Automatically keep products synced with Shopify if > 2 minutes old
+    if (Date.now() - lastShopifySyncTime > 2 * 60 * 1000) {
+      lastShopifySyncTime = Date.now()
+      import('../services/shopifyService.js')
+        .then(({ syncShopifyProductsToDatabase }) => syncShopifyProductsToDatabase())
+        .catch((e) => console.log('[Auto Shopify Sync Note]', e.message))
+    }
+
     const { category, brand, search, sort, minPrice, maxPrice, page = 1, limit = 12 } = req.query
 
     const filter = {}
@@ -134,4 +144,17 @@ export const syncShopify = async (req, res, next) => {
     res.status(500).json({ success: false, message: 'Shopify sync failed', error: error.message })
   }
 }
+
+// POST /api/products/webhook/shopify — Real-time webhook from Shopify
+export const handleShopifyWebhook = async (req, res) => {
+  try {
+    const { syncShopifyProductsToDatabase } = await import('../services/shopifyService.js')
+    await syncShopifyProductsToDatabase()
+    res.status(200).send('OK')
+  } catch (error) {
+    console.error('Shopify webhook sync error:', error)
+    res.status(500).send('Webhook processing failed')
+  }
+}
+
 

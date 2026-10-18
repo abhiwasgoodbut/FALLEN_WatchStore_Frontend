@@ -73,9 +73,14 @@ app.listen(PORT, () => {
   ╚═══════════════════════════════════════╝
   `)
 
-  // Automatically sync Shopify products in background on startup
-  import('./services/shopifyService.js')
-    .then(({ syncShopifyProductsToDatabase }) => syncShopifyProductsToDatabase())
-    .then((results) => console.log(`[Shopify Sync] Synced ${results.length} products on startup`))
-    .catch((err) => console.log('[Shopify Sync Note]', err.message))
+  // Automatically sync Shopify products in background on startup and every 3 minutes
+  const syncShopify = () => {
+    import('./services/shopifyService.js')
+      .then(({ syncShopifyProductsToDatabase }) => syncShopifyProductsToDatabase())
+      .then((results) => console.log(`[Shopify Sync] Synced ${results.length} products`))
+      .catch((err) => console.log('[Shopify Sync Note]', err.message))
+  }
+
+  syncShopify()
+  setInterval(syncShopify, 3 * 60 * 1000)
 })
