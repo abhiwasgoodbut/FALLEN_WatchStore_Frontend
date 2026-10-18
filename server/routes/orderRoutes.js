@@ -12,6 +12,15 @@ const router = express.Router()
 router.get('/track/:trackingId', trackOrder)
 router.post('/webhook/dropdash', handleDropdashWebhook)
 
+// Shopify Direct Checkout - GET test/health check
+router.get('/shopify-checkout', (req, res) => {
+  res.json({
+    status: 'online',
+    endpoint: '/api/orders/shopify-checkout',
+    message: 'Shopify checkout endpoint is active! Please use HTTP POST with cartItems to create a checkout session.',
+  })
+})
+
 // Shopify Direct Checkout (Guest & Auth friendly)
 router.post('/shopify-checkout', optionalProtect, async (req, res, next) => {
   try {
