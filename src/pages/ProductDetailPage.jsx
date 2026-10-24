@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { FiHeart, FiMinus, FiPlus, FiShoppingBag, FiTruck, FiShield, FiRefreshCw, FiAward, FiLock, FiDollarSign, FiCreditCard, FiX } from 'react-icons/fi'
+import { FiHeart, FiMinus, FiPlus, FiShoppingBag, FiTruck, FiShield, FiRefreshCw, FiAward, FiLock, FiDollarSign, FiCreditCard, FiX, FiClock } from 'react-icons/fi'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
 import { useNotification } from '../context/NotificationContext'
@@ -23,6 +23,27 @@ function ProductDetailPage() {
   const [activeMediaIndex, setActiveMediaIndex] = useState(0)
   const [previewImage, setPreviewImage] = useState(null)
   const [buyingNow, setBuyingNow] = useState(false)
+
+  // Diwali Special Urgency Countdown Timer (1h 20m = 4800s, restarts on each visit/reload)
+  const [timeLeft, setTimeLeft] = useState(4800)
+
+  useEffect(() => {
+    // Starts at 1 hour 20 minutes (4800s) on every page mount / reload
+    setTimeLeft(4800)
+    const timer = setInterval(() => {
+      setTimeLeft(prev => (prev > 1 ? prev - 1 : 4800))
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [id])
+
+  const formatTimer = (seconds) => {
+    const h = String(Math.floor(seconds / 3600)).padStart(2, '0')
+    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0')
+    const s = String(seconds % 60).padStart(2, '0')
+    return { h, m, s }
+  }
+
+  const { h: dealHours, m: dealMins, s: dealSecs } = formatTimer(timeLeft)
 
   const { reviews: currentReviews = [], ratingSummary: currentRatingSummary = { average: 4.8, totalRatings: 120, breakdown: [] } } = useMemo(() => {
     try {
@@ -301,6 +322,42 @@ function ProductDetailPage() {
                   <span className="product-detail__discount">{discount}% OFF</span>
                 </>
               )}
+            </div>
+
+            {/* Diwali Special Limited Time Deal Banner */}
+            <div className="product-detail__deal-banner">
+              <div className="product-detail__deal-header">
+                <span className="product-detail__deal-tag">
+                  🪔 Limited Time Offer · Diwali Special
+                </span>
+                <span className="product-detail__deal-claimed">
+                  🔥 84% Claimed
+                </span>
+              </div>
+              <div className="product-detail__deal-timer-row">
+                <span className="product-detail__deal-ends-text">
+                  <FiClock style={{ color: '#d97706' }} /> Deal ends in:
+                </span>
+                <div className="product-detail__deal-timer">
+                  <div className="product-detail__timer-unit">
+                    <span className="product-detail__timer-num">{dealHours}</span>
+                    <span className="product-detail__timer-label">hours</span>
+                  </div>
+                  <span className="product-detail__timer-colon">:</span>
+                  <div className="product-detail__timer-unit">
+                    <span className="product-detail__timer-num">{dealMins}</span>
+                    <span className="product-detail__timer-label">mins</span>
+                  </div>
+                  <span className="product-detail__timer-colon">:</span>
+                  <div className="product-detail__timer-unit">
+                    <span className="product-detail__timer-num">{dealSecs}</span>
+                    <span className="product-detail__timer-label">secs</span>
+                  </div>
+                </div>
+              </div>
+              <div className="product-detail__deal-progress-track">
+                <div className="product-detail__deal-progress-fill" style={{ width: '84%' }}></div>
+              </div>
             </div>
 
             <p className="product-detail__description">{product.description}</p>
