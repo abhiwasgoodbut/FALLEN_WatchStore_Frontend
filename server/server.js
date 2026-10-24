@@ -2,7 +2,7 @@ import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import mongoose from 'mongoose'
-import connectDB, { getLastConnectionError } from './config/db.js'
+import connectDB, { getLastConnectionError, getMaskedMongoUri } from './config/db.js'
 import errorHandler from './middleware/errorHandler.js'
 
 // Route imports
@@ -64,7 +64,9 @@ app.get(['/api/health', '/health'], async (req, res) => {
     status: isConnected ? 'ok' : 'degraded',
     message: isConnected ? 'FALLEN API is running 🚀' : 'FALLEN API is running but database is not connected',
     dbState: isConnected ? 'connected' : 'disconnected',
+    readyStateCode: mongoose.connection.readyState,
     dbError: getLastConnectionError(),
+    mongoUri: getMaskedMongoUri(),
     hasMongoUri: Boolean(process.env.MONGO_URI),
     environment: process.env.VERCEL ? 'vercel' : 'local'
   })

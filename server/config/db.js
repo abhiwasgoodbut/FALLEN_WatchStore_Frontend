@@ -10,34 +10,60 @@ if (process.platform === 'win32') {
   }
 }
 
-let cachedConnection = null
 let lastConnectionError = null
+let connectionPromise = null
 
 export const getLastConnectionError = () => lastConnectionError
 
+const getCleanMongoUri = () => {
+  let uri = (process.env.MONGO_URI || '').trim()
+  if ((uri.startsWith('"') && uri.endsWith('"')) || (uri.startsWith("'") && uri.endsWith("'"))) {
+    uri = uri.slice(1, -1).trim()
+  }
+  return uri
+}
+
+export const getMaskedMongoUri = () => {
+  const uri = getCleanMongoUri()
+  if (!uri) return 'MISSING'
+  return uri.replace(/:\/\/([^:]+):([^@]+)@/, '://$1:****@')
+}
+
 const connectDB = async () => {
-  // Reuse existing connection if already connected
+  // If already connected, return immediately
   if (mongoose.connection.readyState === 1) {
     return mongoose.connection
   }
 
-  if (!process.env.MONGO_URI) {
-    lastConnectionError = 'MONGO_URI is missing from environment variables'
+  // If currently connecting, wait for the pending promise
+  if (mongoose.connection.readyState === 2 && connectionPromise) {
+    try {
+      await connectionPromise
+      return mongoose.connection
+    } catch (err) {
+      // Fall through to retry
+    }
+  }
+
+  const uri = getCleanMongoUri()
+  if (!uri) {
+    lastConnectionError = 'MONGO_URI is missing or empty'
     console.error('❌ ' + lastConnectionError)
     return null
   }
 
   try {
-    // If not on win32, do not mess with DNS unless needed, but let's configure standard options
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 5000,
-      connectTimeoutMS: 5000,
+    console.log(`Connecting to MongoDB (${getMaskedMongoUri()})...`)
+    connectionPromise = mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 7000,
+      connectTimeoutMS: 7000,
     })
-    cachedConnection = conn
+    await connectionPromise
     lastConnectionError = null
-    console.log(`✅ MongoDB Connected: ${conn.connection.host}`)
-    return conn
+    console.log(`✅ MongoDB Connected: ${mongoose.connection.host}`)
+    return mongoose.connection
   } catch (error) {
+    connectionPromise = null
     lastConnectionError = error.message
     console.error(`❌ MongoDB Connection Error: ${error.message}`)
     return null
