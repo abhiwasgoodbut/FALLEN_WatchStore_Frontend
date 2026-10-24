@@ -11,6 +11,9 @@ if (process.platform === 'win32') {
 }
 
 let cachedConnection = null
+let lastConnectionError = null
+
+export const getLastConnectionError = () => lastConnectionError
 
 const connectDB = async () => {
   // Reuse existing connection if already connected
@@ -18,25 +21,25 @@ const connectDB = async () => {
     return mongoose.connection
   }
 
-  if (cachedConnection) {
-    return cachedConnection
-  }
-
   if (!process.env.MONGO_URI) {
-    console.error('❌ MONGO_URI is missing from environment variables!')
+    lastConnectionError = 'MONGO_URI is missing from environment variables'
+    console.error('❌ ' + lastConnectionError)
     return null
   }
 
   try {
+    // If not on win32, do not mess with DNS unless needed, but let's configure standard options
     const conn = await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 8000,
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000,
     })
     cachedConnection = conn
+    lastConnectionError = null
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`)
     return conn
   } catch (error) {
+    lastConnectionError = error.message
     console.error(`❌ MongoDB Connection Error: ${error.message}`)
-    // Do not call process.exit(1) in serverless as it causes 500 FUNCTION_INVOCATION_FAILED
     return null
   }
 }

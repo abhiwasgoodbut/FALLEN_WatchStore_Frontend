@@ -2,7 +2,7 @@ import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import mongoose from 'mongoose'
-import connectDB from './config/db.js'
+import connectDB, { getLastConnectionError } from './config/db.js'
 import errorHandler from './middleware/errorHandler.js'
 
 // Route imports
@@ -41,21 +41,30 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true }))
 
-// Ensure DB is connected for serverless invocations (except health check)
+// Ensure DB is connected for serverless invocations
 app.use(async (req, res, next) => {
   if (req.path === '/api/health' || req.path === '/health') {
     return next()
   }
-  await connectDB()
+  const conn = await connectDB()
+  if (!conn && mongoose.connection.readyState !== 1) {
+    return res.status(503).json({
+      error: 'Database connection failed',
+      details: getLastConnectionError() || 'Unable to connect to MongoDB'
+    })
+  }
   next()
 })
 
-// Health check (responds immediately even if DB is still connecting)
-app.get(['/api/health', '/health'], (req, res) => {
+// Health check
+app.get(['/api/health', '/health'], async (req, res) => {
+  await connectDB()
+  const isConnected = mongoose.connection.readyState === 1
   res.json({
-    status: 'ok',
-    message: 'FALLEN API is running 🚀',
-    dbState: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    status: isConnected ? 'ok' : 'degraded',
+    message: isConnected ? 'FALLEN API is running 🚀' : 'FALLEN API is running but database is not connected',
+    dbState: isConnected ? 'connected' : 'disconnected',
+    dbError: getLastConnectionError(),
     hasMongoUri: Boolean(process.env.MONGO_URI),
     environment: process.env.VERCEL ? 'vercel' : 'local'
   })
