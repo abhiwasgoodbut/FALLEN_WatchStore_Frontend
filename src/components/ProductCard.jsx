@@ -3,6 +3,7 @@ import { FiHeart, FiShoppingBag } from 'react-icons/fi'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
 import { useNotification } from '../context/NotificationContext'
+import { trackAddToCart, trackAddToWishlist } from '../utils/pixel'
 
 function ProductCard({ product }) {
   const { addToCart } = useCart()
@@ -17,12 +18,16 @@ function ProductCard({ product }) {
     e.preventDefault()
     e.stopPropagation()
     addToCart(product)
+    trackAddToCart(product, 1)
     notify.success(`${product.name} added to cart`)
   }
 
   const handleToggleWishlist = (e) => {
     e.preventDefault()
     e.stopPropagation()
+    if (!wishlisted) {
+      trackAddToWishlist(product)
+    }
     toggleWishlist(product)
     notify.info(wishlisted ? `Removed from wishlist` : `${product.name} added to wishlist`)
   }

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { FiLock, FiTruck, FiShield, FiCheckCircle } from 'react-icons/fi'
 import { useCart } from '../context/CartContext'
 import { useNotification } from '../context/NotificationContext'
+import { trackInitiateCheckout } from '../utils/pixel'
 import API from '../api/axios'
 
 function CheckoutPage() {
@@ -19,6 +20,7 @@ function CheckoutPage() {
   const initiateShopifyCheckout = async () => {
     if (cartItems.length === 0) return
 
+    trackInitiateCheckout(cartItems, totalAmount)
     setLoading(true)
     setError(null)
 

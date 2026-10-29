@@ -4,6 +4,7 @@ import { FiSearch, FiHeart, FiShoppingBag, FiUser, FiX, FiGrid } from 'react-ico
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
 import { useAuth } from '../context/AuthContext'
+import { trackSearch } from '../utils/pixel'
 import staticProducts from '../data/products'
 import API from '../api/axios'
 
@@ -17,6 +18,15 @@ function Navbar() {
   const { wishlistCount } = useWishlist()
   const { user, isAuthenticated, isAdmin } = useAuth()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (searchQuery.trim().length >= 3) {
+      const handler = setTimeout(() => {
+        trackSearch(searchQuery.trim())
+      }, 700)
+      return () => clearTimeout(handler)
+    }
+  }, [searchQuery])
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50)

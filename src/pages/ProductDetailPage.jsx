@@ -8,6 +8,7 @@ import ProductCard from '../components/ProductCard'
 import ProductVideoPlayer, { getVideoThumbnail } from '../components/ProductVideoPlayer'
 import staticProducts from '../data/products'
 import { getProductReviews, ratingSummary } from '../data/reviews'
+import { trackViewContent, trackAddToCart, trackInitiateCheckout, trackAddToWishlist } from '../utils/pixel'
 import API from '../api/axios'
 
 function ProductDetailPage() {
@@ -54,6 +55,8 @@ function ProductDetailPage() {
   }, [product])
 
   const handleBuyNow = async () => {
+    if (!product) return
+    trackInitiateCheckout([{ ...product, quantity }], (product.salePrice || product.price) * quantity)
     setBuyingNow(true)
     try {
       const { data: shopifyData } = await API.post('/orders/shopify-checkout', {
@@ -187,6 +190,13 @@ function ProductDetailPage() {
     )
   }
 
+  // Track Meta Pixel ViewContent
+  useEffect(() => {
+    if (product) {
+      trackViewContent(product)
+    }
+  }, [product])
+
   const wishlisted = isInWishlist(product.id)
   const discount = Math.round(((product.price - product.salePrice) / product.price) * 100)
   const currentMedia = mediaList[activeMediaIndex] || mediaList[0]
@@ -195,10 +205,14 @@ function ProductDetailPage() {
     for (let i = 0; i < quantity; i++) {
       addToCart(product)
     }
+    trackAddToCart(product, quantity)
     notify.success(`${product.name} (×${quantity}) added to cart`)
   }
 
   const handleToggleWishlist = () => {
+    if (!wishlisted) {
+      trackAddToWishlist(product)
+    }
     toggleWishlist(product)
     notify.info(wishlisted ? 'Removed from wishlist' : `${product.name} added to wishlist`)
   }

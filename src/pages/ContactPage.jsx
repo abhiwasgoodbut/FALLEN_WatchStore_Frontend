@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FiMail, FiPhone, FiMapPin, FiClock, FiSend } from 'react-icons/fi'
+import { trackContact } from '../utils/pixel'
 
 function ContactPage() {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ function ContactPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    trackContact()
     setSent(true)
     setTimeout(() => setSent(false), 4000)
     setFormData({ name: '', email: '', phone: '', subject: '', message: '' })

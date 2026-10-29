@@ -1,4 +1,6 @@
-import { Routes, Route } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Routes, Route, useLocation } from 'react-router-dom'
+import { trackPageView } from './utils/pixel'
 import Layout from './components/Layout'
 import AdminLayout from './components/AdminLayout'
 import HomePage from './pages/HomePage'
@@ -20,6 +22,13 @@ import AdminUsers from './pages/admin/AdminUsers'
 import AdminCoupons from './pages/admin/AdminCoupons'
 
 function App() {
+  const location = useLocation()
+
+  // Track Meta Pixel PageView on route changes
+  useEffect(() => {
+    trackPageView()
+  }, [location.pathname, location.search])
+
   return (
     <Routes>
       {/* Storefront */}

@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { useWishlist } from '../context/WishlistContext'
 import { useNotification } from '../context/NotificationContext'
+import { trackInitiateCheckout } from '../utils/pixel'
 import API from '../api/axios'
 
 function CartPage() {
@@ -23,7 +24,7 @@ function CartPage() {
 
   const handleCheckout = async () => {
     if (cartItems.length === 0) return
-
+    trackInitiateCheckout(cartItems, cartTotal)
     setCheckingOut(true)
     try {
       // Create official Shopify checkout session
