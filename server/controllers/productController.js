@@ -1,3 +1,4 @@
+import mongoose from 'mongoose'
 import Product from '../models/Product.js'
 
 let lastShopifySyncTime = 0
@@ -59,7 +60,19 @@ export const getProducts = async (req, res, next) => {
 // GET /api/products/:id
 export const getProductById = async (req, res, next) => {
   try {
-    const product = await Product.findById(req.params.id)
+    const { id } = req.params
+    let product = null
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      product = await Product.findById(id)
+    }
+    if (!product) {
+      product = await Product.findOne({
+        $or: [
+          { shopifyProductId: id },
+          { shopifyProductId: `gid://shopify/Product/${id}` }
+        ]
+      })
+    }
     if (!product) {
       return res.status(404).json({ message: 'Product not found' })
     }

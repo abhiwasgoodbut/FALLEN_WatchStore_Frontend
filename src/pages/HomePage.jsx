@@ -8,9 +8,11 @@ import API from '../api/axios'
 
 function HomePage() {
   const [dbProducts, setDbProducts] = useState([])
+  const [loading, setLoading] = useState(true)
   const [previewImage, setPreviewImage] = useState(null)
 
   useEffect(() => {
+    setLoading(true)
     API.get('/products?limit=100')
       .then(({ data }) => {
         const prods = (data.products || data).map(p => ({
@@ -22,7 +24,10 @@ function HomePage() {
         }))
         setDbProducts(prods)
       })
-      .catch(() => {})
+      .catch((err) => {
+        console.error('HomePage fetch products error:', err)
+      })
+      .finally(() => setLoading(false))
   }, [])
 
   const allProducts = [...dbProducts, ...staticProducts]
@@ -112,9 +117,15 @@ function HomePage() {
             </p>
           </div>
           <div className="products-grid">
-            {featuredProducts.slice(0, 4).map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {loading && allProducts.length === 0 ? (
+              <p style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem', color: '#888' }}>
+                Loading products...
+              </p>
+            ) : (
+              featuredProducts.slice(0, 4).map(product => (
+                <ProductCard key={product.id || product._id} product={product} />
+              ))
+            )}
           </div>
           <div style={{ textAlign: 'center', marginTop: '3rem' }}>
             <Link to="/shop" className="btn btn--outline-dark">
@@ -157,9 +168,15 @@ function HomePage() {
             </p>
           </div>
           <div className="products-grid">
-            {bestsellerProducts.slice(0, 4).map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {loading && allProducts.length === 0 ? (
+              <p style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem', color: '#888' }}>
+                Loading bestsellers...
+              </p>
+            ) : (
+              bestsellerProducts.slice(0, 4).map(product => (
+                <ProductCard key={product.id || product._id} product={product} />
+              ))
+            )}
           </div>
           <div style={{ textAlign: 'center', marginTop: '3rem' }}>
             <Link to="/shop" className="btn btn--outline-dark">

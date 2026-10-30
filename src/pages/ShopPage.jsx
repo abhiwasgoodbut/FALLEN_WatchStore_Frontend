@@ -13,9 +13,11 @@ function ShopPage() {
   const [sortBy, setSortBy] = useState('default')
   const [visibleCount, setVisibleCount] = useState(12)
   const [dbProducts, setDbProducts] = useState([])
+  const [loading, setLoading] = useState(true)
 
   // Fetch DB products on mount
   useEffect(() => {
+    setLoading(true)
     API.get('/products?limit=100')
       .then(({ data }) => {
         const prods = (data.products || data).map(p => ({
@@ -27,7 +29,10 @@ function ShopPage() {
         }))
         setDbProducts(prods)
       })
-      .catch(() => {})
+      .catch((err) => {
+        console.error('ShopPage fetch products error:', err)
+      })
+      .finally(() => setLoading(false))
   }, [])
 
   // Merge: DB products first, then related local products!
@@ -219,13 +224,28 @@ function ShopPage() {
 
             {/* Products */}
             <div className="shop-page__products">
-              <div className="products-grid">
-                {visibleProducts.map(product => (
-                  <ProductCard key={product.id || product._id} product={product} />
-                ))}
-              </div>
+              {loading && allProducts.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#888' }}>
+                  <p style={{ fontSize: '1.1rem' }}>Loading products...</p>
+                </div>
+              ) : visibleProducts.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#888' }}>
+                  <p style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>No products found matching your selection.</p>
+                  {hasActiveFilters && (
+                    <button type="button" className="btn btn--outline" onClick={handleResetFilters}>
+                      Clear Filters
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="products-grid">
+                  {visibleProducts.map(product => (
+                    <ProductCard key={product.id || product._id} product={product} />
+                  ))}
+                </div>
+              )}
 
-              {visibleCount < filteredProducts.length && (
+              {!loading && visibleCount < filteredProducts.length && (
                 <div className="shop-page__load-more">
                   <button
                     className="btn btn--outline-dark"

@@ -83,6 +83,13 @@ function ProductDetailPage() {
     }
   }
 
+  // Track Meta Pixel ViewContent
+  useEffect(() => {
+    if (product) {
+      trackViewContent(product)
+    }
+  }, [product])
+
   useEffect(() => {
     setLoading(true)
     setQuantity(1)
@@ -108,8 +115,10 @@ function ProductDetailPage() {
           image: data.images?.[0]?.url || 'https://via.placeholder.com/400?text=No+Image',
         }
         setProduct(p)
-        // Combine related products with static products
-        return API.get(`/products?limit=5`)
+        setLoading(false)
+
+        // Fetch related products uncoupled so errors don't affect main product
+        API.get(`/products?limit=5`)
           .then(({ data: related }) => {
             const prods = (related.products || related)
               .filter(r => r._id !== data._id)
@@ -125,14 +134,15 @@ function ProductDetailPage() {
             setRelatedProducts(staticProducts.slice(0, 4))
           })
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error('Failed to load product:', err)
         const fallback = staticProducts.find(p => String(p.id) === String(id))
         setProduct(fallback || null)
         if (fallback) {
           setRelatedProducts(staticProducts.filter(p => String(p.id) !== String(id)).slice(0, 4))
         }
+        setLoading(false)
       })
-      .finally(() => setLoading(false))
   }, [id])
 
   const allImages = useMemo(() => {
@@ -174,7 +184,7 @@ function ProductDetailPage() {
   if (loading) {
     return (
       <div style={{ textAlign: 'center', padding: '6rem 2rem' }}>
-        <p>Loading product...</p>
+        <p style={{ fontSize: '1.2rem', color: '#666' }}>Loading product details...</p>
       </div>
     )
   }
@@ -190,15 +200,10 @@ function ProductDetailPage() {
     )
   }
 
-  // Track Meta Pixel ViewContent
-  useEffect(() => {
-    if (product) {
-      trackViewContent(product)
-    }
-  }, [product])
-
-  const wishlisted = isInWishlist(product.id)
-  const discount = Math.round(((product.price - product.salePrice) / product.price) * 100)
+  const wishlisted = Boolean(isInWishlist(product.id || product._id))
+  const price = Number(product.price || 0)
+  const salePrice = Number(product.salePrice ?? product.price ?? 0)
+  const discount = price > 0 ? Math.round(((price - salePrice) / price) * 100) : 0
   const currentMedia = mediaList[activeMediaIndex] || mediaList[0]
 
   const handleAddToCart = () => {
@@ -329,11 +334,11 @@ function ProductDetailPage() {
             </div>
 
             <div className="product-detail__price-row">
-              <span className="product-detail__sale-price">₹{product.salePrice.toLocaleString()}</span>
-              {product.price !== product.salePrice && (
+              <span className="product-detail__sale-price">₹{salePrice.toLocaleString()}</span>
+              {price > 0 && price !== salePrice && (
                 <>
-                  <span className="product-detail__original-price">₹{product.price.toLocaleString()}</span>
-                  <span className="product-detail__discount">{discount}% OFF</span>
+                  <span className="product-detail__original-price">₹{price.toLocaleString()}</span>
+                  {discount > 0 && <span className="product-detail__discount">{discount}% OFF</span>}
                 </>
               )}
             </div>
