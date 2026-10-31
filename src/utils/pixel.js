@@ -127,6 +127,23 @@ export const trackSearch = (searchString) => {
 }
 
 /**
+ * Track Purchase event
+ */
+export const trackPurchase = (totalAmount, orderId = '', currency = 'INR', items = []) => {
+  trackEvent('Purchase', {
+    content_type: 'product',
+    content_ids: items.map(i => String(i.id || i._id || i.shopifyProductId)).filter(Boolean),
+    contents: items.map(i => ({
+      id: String(i.id || i._id || i.shopifyProductId),
+      quantity: i.quantity || 1,
+      item_price: Number(i.salePrice ?? i.price ?? 0),
+    })),
+    value: Number(totalAmount) || 0,
+    currency,
+  })
+}
+
+/**
  * Track Contact Form Submission
  */
 export const trackContact = () => {
